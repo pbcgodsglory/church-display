@@ -1,3 +1,5 @@
+const slideshow = document.querySelector("iframe");
+
 setInterval(function () {
-    location.reload();
-}, 60000);
+    slideshow.src = slideshow.src;
+}, 15000);
