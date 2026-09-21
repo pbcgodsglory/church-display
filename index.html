@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,6 +44,22 @@
             display: block;
         }
 
+        /*
+         * Transparent layer over the slideshow.
+         *
+         * This prevents accidental mouse clicks and touchscreen
+         * touches from interacting with Google Slides.
+         */
+        #touchLayer {
+            position: fixed;
+            inset: 0;
+            z-index: 900;
+            background: transparent;
+        }
+
+        /*
+         * Full Screen button
+         */
         #fullscreenButton {
             position: fixed;
             top: 20px;
@@ -59,9 +76,13 @@
 
             opacity: 0;
             pointer-events: none;
+
             transition: opacity 0.3s ease;
         }
 
+        /*
+         * Show the button when there is activity.
+         */
         #fullscreenButton.visible {
             opacity: 1;
             pointer-events: auto;
@@ -71,12 +92,14 @@
 
 <body>
 
+    <!-- Full Screen / Exit Full Screen button -->
     <button id="fullscreenButton">Full Screen</button>
 
+    <!-- Google Slides slideshow -->
     <div class="display">
 
         <iframe
-            src="https://docs.google.com/presentation/d/e/2PACX-1vQDMOCd19wMk0mzklb9YwSEBaHw7HYF9wQUN68cnBF-No0XfExwFWu7cy1wzdyK9NCirwODq15k0P_T/pubembed?start=true&loop=true&delayms=3000"
+            src="https://docs.google.com/presentation/d/e/2PACX-1vQDMOCd19wMk0mzklb9YwSEBaHw7HYF9wQUN68cnBF-No0XfExwFWu7cy1wzdyK9NCirwODq15k0P_T/pubembed?start=true&loop=true&delayms=12000"
             allowfullscreen="true"
             mozallowfullscreen="true"
             webkitallowfullscreen="true">
@@ -84,29 +107,163 @@
 
     </div>
 
+    <!--
+         This invisible layer prevents accidental interaction
+         with Google Slides while allowing us to detect activity.
+    -->
+    <div id="touchLayer"></div>
+
+    <!-- Hourly slideshow refresh -->
     <script src="script.js"></script>
 
     <script>
-        const fullscreenButton = document.getElementById("fullscreenButton");
+
+        const fullscreenButton =
+            document.getElementById("fullscreenButton");
+
+        const touchLayer =
+            document.getElementById("touchLayer");
 
         let hideButtonTimer;
 
+
+        /*
+         * Show the Full Screen button.
+         */
         function showFullscreenButton() {
+
             fullscreenButton.classList.add("visible");
 
             clearTimeout(hideButtonTimer);
 
             hideButtonTimer = setTimeout(function () {
+
                 fullscreenButton.classList.remove("visible");
+
             }, 3000);
         }
 
-        document.addEventListener("mousemove", showFullscreenButton);
 
-        fullscreenButton.addEventListener("click", function () {
-            document.documentElement.requestFullscreen();
-        });
+        /*
+         * Change the button text depending on
+         * whether we are currently in fullscreen.
+         */
+        function updateFullscreenButton() {
+
+            if (document.fullscreenElement) {
+
+                fullscreenButton.textContent =
+                    "Exit Full Screen";
+
+            } else {
+
+                fullscreenButton.textContent =
+                    "Full Screen";
+            }
+        }
+
+
+        /*
+         * Detect mouse movement anywhere on the display.
+         */
+        touchLayer.addEventListener(
+            "pointermove",
+            showFullscreenButton
+        );
+
+
+        /*
+         * Detect touchscreen taps and other pointer activity.
+         */
+        touchLayer.addEventListener(
+            "pointerdown",
+            function (event) {
+
+                showFullscreenButton();
+
+                /*
+                 * Prevent the interaction from reaching
+                 * anything underneath the transparent layer.
+                 */
+                event.preventDefault();
+            }
+        );
+
+
+        /*
+         * Prevent accidental clicks from interacting
+         * with the slideshow.
+         */
+        touchLayer.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                showFullscreenButton();
+            }
+        );
+
+
+        /*
+         * Full Screen button.
+         */
+        fullscreenButton.addEventListener(
+            "click",
+            function () {
+
+                if (document.fullscreenElement) {
+
+                    /*
+                     * We are already fullscreen,
+                     * so exit fullscreen.
+                     */
+                    document.exitFullscreen();
+
+                } else {
+
+                    /*
+                     * We are not fullscreen,
+                     * so enter fullscreen.
+                     */
+                    if (
+                        document.documentElement.requestFullscreen
+                    ) {
+
+                        document.documentElement.requestFullscreen();
+
+                    }
+                }
+
+                showFullscreenButton();
+            }
+        );
+
+
+        /*
+         * Keep the button text synchronized with
+         * the actual fullscreen state.
+         */
+        document.addEventListener(
+            "fullscreenchange",
+            function () {
+
+                updateFullscreenButton();
+                showFullscreenButton();
+
+            }
+        );
+
+
+        /*
+         * Set the correct button text when
+         * the page first loads.
+         */
+        updateFullscreenButton();
+
     </script>
 
 </body>
 </html>
+```
