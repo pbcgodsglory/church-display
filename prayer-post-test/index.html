@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PBC Prayer — Submission Test</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6ff;color:#18233b;font:17px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:650px;margin:25px auto;padding:15px}header,form,.notice{background:white;border:1px solid #dae1f5;border-radius:17px;padding:23px;margin-bottom:16px}header{text-align:center}header img{width:80px;height:80px;border-radius:16px}h1{margin:8px 0;font-size:29px}h2{font-size:20px}label{display:block;margin:14px 0 7px;font-weight:650}input[type=text],textarea{width:100%;padding:12px;border:1px solid #aab5d6;border-radius:8px;font:inherit}textarea{min-height:115px}fieldset{border:0;padding:0;margin:20px 0}legend{font-weight:700}fieldset label{font-weight:400}button{display:block;width:100%;background:#526eff;color:white;border:0;border-radius:10px;padding:14px;font:inherit;font-weight:700;margin-top:20px}button:disabled{opacity:.5}.notice{background:#fff7e7;border-color:#ebd29f}.hidden{display:none}small{color:#526078}a{color:#304cc1}
+</style>
+</head>
+<body><main>
+<header><img src="../prayer-app/icon-192.png" alt="Providence Baptist Church logo"><div>PROVIDENCE BAPTIST CHURCH</div><h1>Prayer Request — TEST</h1><p>This page is for checking submissions, not for congregation use.</p></header>
+<div class="notice"><strong>Test only.</strong> Enter a clearly labeled dummy request. Google does not let this website read the response to a cross-origin Apps Script POST, so an attempted send is <em>not</em> proof of delivery. Confirm the request appears in the church's Requests tab.</div>
+<form id="f">
+<label for="name">Your name</label><input id="name" type="text" maxlength="100" required placeholder="TEST — Your name">
+<fieldset><legend>Who needs prayer?</legend><label><input type="radio" name="who" value="self" checked> Myself</label><label><input type="radio" name="who" value="other"> Someone else</label></fieldset>
+<div id="otherWrap" class="hidden"><label for="other">Name of person needing prayer</label><input id="other" type="text" maxlength="120"></div>
+<label><input type="checkbox" id="unspoken"> Unspoken prayer request</label>
+<div id="detailsWrap"><label for="details">Prayer request</label><textarea id="details" maxlength="2000" required placeholder="TEST ONLY — do not enter sensitive information"></textarea></div>
+<fieldset><legend>Include in church bulletin?</legend><label><input type="radio" name="bulletin" value="no" checked> No — keep private</label><label><input type="radio" name="bulletin" value="yes"> Yes — may be printed</label></fieldset>
+<div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Leave blank</label><input id="website" type="text" tabindex="-1" autocomplete="off"></div>
+<label><input type="checkbox" id="confirm" required> This is a test request, not a real prayer request.</label>
+<button id="send" type="submit">Send test request</button>
+</form>
+<div id="status" class="notice hidden" role="status" aria-live="polite"></div>
+<p><small>Existing public QR codes and the live prayer form have not been changed.</small></p>
+</main>
+<script>
+const ENDPOINT='https://script.google.com/macros/s/AKfycbzfHH1FZClKHemKs3p_dbiFEIMJBu58_DgFVf5LSjF9vGsVLwvEfPbBqJ2ZCGonKTW0/exec';
+const $=id=>document.getElementById(id);
+document.querySelectorAll('input[name=who]').forEach(r=>r.addEventListener('change',()=>{let other=document.querySelector('input[name=who]:checked').value==='other';$('otherWrap').classList.toggle('hidden',!other);$('other').required=other;}));
+$('unspoken').addEventListener('change',()=>{$('detailsWrap').classList.toggle('hidden',$('unspoken').checked);$('details').required=!$('unspoken').checked;});
+$('f').addEventListener('submit',async e=>{
+e.preventDefault();
+if(!$('f').reportValidity())return;
+const btn=$('send');btn.disabled=true;
+const payload={submittedBy:$('name').value.trim(),website:$('website').value,requests:[{forWhom:document.querySelector('input[name=who]:checked').value,prayerFor:$('other').value.trim(),unspoken:$('unspoken').checked,details:$('details').value.trim(),bulletinConsent:document.querySelector('input[name=bulletin]:checked').value==='yes'}]};
+const status=$('status');status.classList.remove('hidden');status.textContent='Attempting to send…';
+try{
+const body=new URLSearchParams({payload:JSON.stringify(payload)});
+await fetch(ENDPOINT,{method:'POST',mode:'no-cors',body});
+status.innerHTML='<strong>Request sent from the browser, but receipt is NOT verified.</strong> Open the church Google Sheet and check the Requests tab for this TEST request. If it is absent, the Apps Script deployment or cross-origin POST is not working. Do not send another real request until verified.';
+}catch(err){status.textContent='The browser could not send the request. No success can be confirmed. '+(err&&err.message?err.message:'');}
+finally{btn.disabled=false;}
+});
+</script></body></html>
