@@ -1,11 +1,212 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#526eff"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PBC Prayer"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><title>PBC Prayer — Providence Baptist Church</title><style>
-*{box-sizing:border-box}body{font:18px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;background:#f3f6ff;color:#172035;margin:0}main{max-width:590px;margin:24px auto;padding:0 16px 35px}header{text-align:center;background:white;border:1px solid #dbe3fb;border-radius:20px;padding:24px 20px;box-shadow:0 6px 18px #202c6012}img.logo{width:114px;height:114px;object-fit:contain;border-radius:24px}.brand{color:#475fd5;font-size:15px;font-weight:700;letter-spacing:.05em;margin:12px 0 0}h1{font-size:38px;margin:3px 0 8px}p{margin:7px 0 13px}.muted{color:#4d5666}.card{background:#fff;border:1px solid #dbe3fb;border-radius:16px;padding:20px;margin-top:17px}h2{font-size:23px;margin:0 0 10px}a.action{display:block;text-align:center;text-decoration:none;color:white;background:#526eff;font-size:20px;font-weight:750;border-radius:12px;padding:14px;margin-top:18px}a:focus-visible,button:focus-visible{outline:3px solid #233bb5;outline-offset:3px}.steps{padding-left:26px}.steps li{padding:9px 0}.switch{display:flex;gap:9px;margin:15px 0}.switch button{flex:1;border-radius:10px;border:2px solid #526eff;padding:10px;background:white;color:#2940bb;font:inherit;font-weight:700;min-height:52px}.switch button[aria-pressed=true]{background:#526eff;color:white}.hidden{display:none!important}.small{font-size:15px;color:#5b6270}.hint{background:#eef2ff;border-radius:10px;padding:14px}.footer{text-align:center;margin-top:21px}
-</style></head><body><main>
-<header><img class="logo" src="icon-192.png" alt="Providence Baptist Church cross and sunrise logo"><div class="brand">PROVIDENCE BAPTIST CHURCH</div><h1>PBC Prayer</h1><p class="muted" id="description">Save this page to your phone's home screen so you don't have to scan the QR code every time.</p></header>
-<a class="action" id="open" target="_blank" rel="noopener noreferrer external" href="https://script.google.com/macros/s/AKfycbzfHH1FZClKHemKs3p_dbiFEIMJBu58_DgFVf5LSjF9vGsVLwvEfPbBqJ2ZCGonKTW0/exec">Open Prayer Request Form</a>
-<section class="card" id="instructions"><h2>Add PBC Prayer to your phone</h2><div class="switch"><button type="button" data-phone="ios" aria-pressed="true">iPhone</button><button type="button" data-phone="android" aria-pressed="false">Android</button></div><ol class="steps" id="ios"><li>Open <strong>this page in Safari</strong>.</li><li>Tap the <strong>Share</strong> icon (square with arrow).</li><li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>. If offered, leave <strong>Open as Web App</strong> turned on.</li></ol><ol class="steps hidden" id="android"><li>Open <strong>this page in Chrome</strong>.</li><li>Tap the <strong>three-dot menu ⋮</strong>.</li><li>Choose <strong>Add to Home screen</strong> or <strong>Install app</strong>, and confirm.</li></ol><p class="hint">Find the blue-and-black church logo labeled <strong>PBC Prayer</strong> on your home screen. Tap the icon, then tap <strong>Open Prayer Request Form</strong>.</p></section>
-<p class="small footer">No app-store download or Google sign-in needed. An internet connection is required to submit requests.</p></main>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#526eff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="PBC Prayer">
+  <meta name="description" content="Step-by-step instructions to save Providence Baptist Church prayer requests to your phone's home screen.">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>PBC Prayer — Home Screen Instructions</title>
+  <style>
+    :root{color-scheme:light}
+    *{box-sizing:border-box}
+    body{font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f6ff;color:#172035;margin:0}
+    main{max-width:660px;margin:22px auto;padding:0 15px 40px}
+    header{text-align:center;background:#fff;border:1px solid #dbe3fb;border-radius:20px;padding:24px 18px;box-shadow:0 6px 18px #202c6012}
+    img.logo{width:106px;height:106px;object-fit:contain;border-radius:23px}
+    .brand{color:#475fd5;font-size:14px;font-weight:750;letter-spacing:.055em;margin:10px 0 0}
+    h1{font-size:clamp(30px,8vw,39px);line-height:1.15;margin:7px 0 12px}
+    h2{font-size:24px;line-height:1.25;margin:0 0 11px}
+    h3{font-size:20px;line-height:1.35;margin:0}
+    p{margin:8px 0 13px}
+    a{color:#2b46c4}
+    a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #233bb5;outline-offset:3px}
+    .muted{color:#4d5666}
+    .small{font-size:14px;color:#57616f}
+    .action{display:block;text-align:center;text-decoration:none;color:#fff;background:#526eff;font-size:20px;font-weight:750;border-radius:13px;padding:15px 12px;margin:19px 0}
+    .action:hover{background:#4055dc}
+    .card{background:#fff;border:1px solid #dbe3fb;border-radius:17px;padding:20px;margin-top:17px}
+    .switch{display:flex;gap:9px;margin:16px 0 19px}
+    .switch button{flex:1;border-radius:11px;border:2px solid #526eff;padding:12px 8px;background:#fff;color:#2940bb;font:inherit;font-weight:750;min-height:51px}
+    .switch button[aria-pressed="true"]{background:#526eff;color:#fff}
+    [hidden]{display:none!important}
+    .browser{border:1px solid #dce3f4;border-radius:13px;background:#fff;margin:11px 0;overflow:hidden}
+    .browser[open]{border-color:#aabafa;background:#fafbff}
+    .browser summary{font-size:19px;font-weight:730;padding:15px 16px;cursor:pointer;list-style-position:inside}
+    .browser summary::marker{color:#4c65e9}
+    .browser .inner{padding:0 17px 16px}
+    ol{padding-left:27px;margin:8px 0 10px}
+    li{padding:5px 0}
+    .hint{background:#eef2ff;border-left:4px solid #526eff;border-radius:10px;padding:13px 14px;margin:16px 0 7px}
+    .tip{background:#f6f8ff;border-radius:10px;padding:12px 14px}
+    .footer{text-align:center;margin:22px auto 0}
+    .source{font-size:13px;color:#5c6573}
+    @media(max-width:420px){.card{padding:17px 14px}.browser summary{padding:13px 11px}header{padding:20px 15px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img class="logo" src="icon-192.png" alt="Providence Baptist Church cross and sunrise logo">
+    <div class="brand">PROVIDENCE BAPTIST CHURCH</div>
+    <h1>PBC Prayer</h1>
+    <p class="muted" id="description">Save PBC Prayer to your phone's home screen for quick access without scanning the QR code again.</p>
+  </header>
+
+  <a class="action" id="open" target="_blank" rel="noopener noreferrer external" href="https://script.google.com/macros/s/AKfycbzfHH1FZClKHemKs3p_dbiFEIMJBu58_DgFVf5LSjF9vGsVLwvEfPbBqJ2ZCGonKTW0/exec">Open Prayer Request Form</a>
+
+  <section class="card" id="instructions" aria-labelledby="heading-instructions">
+    <h2 id="heading-instructions">Add PBC Prayer to your phone</h2>
+    <p class="muted">Select your phone, then find the browser you're using. These instructions save the <strong>PBC Prayer</strong> logo to your home screen.</p>
+    <div class="switch" role="group" aria-label="Choose your phone">
+      <button type="button" id="choose-ios" data-phone="ios" aria-pressed="true" aria-controls="ios">iPhone / iPad</button>
+      <button type="button" id="choose-android" data-phone="android" aria-pressed="false" aria-controls="android">Android</button>
+    </div>
+
+    <div id="android" hidden>
+      <p><strong>Which browser are you using?</strong> Tap a browser name to see its steps.</p>
+
+      <details class="browser" open>
+        <summary>Samsung Internet</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Samsung Internet</strong> (the purple planet icon).</li>
+            <li>Tap the <strong>menu ☰</strong>, usually at the bottom right.</li>
+            <li>Choose <strong>Add page to</strong>.</li>
+            <li>Tap <strong>Home screen</strong>.</li>
+            <li>Tap <strong>Add</strong>, then confirm if asked.</li>
+          </ol>
+          <p class="small">If your version shows a <strong>+</strong> button in the address bar, you can tap it and choose Home screen instead.</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Google Chrome</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Chrome</strong>.</li>
+            <li>Tap the <strong>three dots ⋮</strong> near the address bar.</li>
+            <li>Tap <strong>Add to Home screen</strong>, <strong>Install app</strong>, or <strong>Install</strong> (the label varies).</li>
+            <li>Confirm with <strong>Add</strong> or <strong>Install</strong>.</li>
+          </ol>
+          <p class="small">If the Google prayer form later says it cannot open the file, try opening it in Samsung Internet or another browser. This can happen with certain Google account sessions in Chrome.</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Mozilla Firefox</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Firefox</strong>.</li>
+            <li>Tap the <strong>three dots ⋮</strong> by the address bar.</li>
+            <li>Choose <strong>Add to Home Screen</strong> or <strong>Install</strong>.</li>
+            <li>If asked, name the shortcut <strong>PBC Prayer</strong> and tap <strong>Add</strong>. Confirm again if prompted.</li>
+          </ol>
+          <p class="small">Make sure you select <em>Add to Home Screen</em> (your phone), not <em>Add to shortcuts</em> (the Firefox start page).</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Brave Browser</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Brave</strong>.</li>
+            <li>Tap the <strong>three dots ⋮</strong> to open the menu.</li>
+            <li>Choose <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+            <li>Tap <strong>Add</strong> or <strong>Install</strong> to confirm.</li>
+          </ol>
+          <p class="small">Depending on Brave's version, you may be offered either a website shortcut or an installed web app. Both provide home-screen access.</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Microsoft Edge</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Edge</strong>.</li>
+            <li>Tap the <strong>three dots …</strong> menu, often at the bottom.</li>
+            <li>Look for <strong>Add to phone</strong>. You may need to swipe across the menu options.</li>
+            <li>Tap <strong>Add to phone</strong> or <strong>Install</strong>, then confirm.</li>
+          </ol>
+          <p class="small">Some Edge versions call this <em>Add to Home screen</em>.</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Opera / Other Android Browsers</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in your preferred browser.</li>
+            <li>Open the browser <strong>menu</strong> or its <strong>+</strong> button near the address bar.</li>
+            <li>Look for <strong>Add to Home screen</strong>, <strong>Add to…</strong>, or <strong>Install</strong>.</li>
+            <li>Choose <strong>Home screen</strong>, then confirm with <strong>Add</strong> or <strong>Install</strong>.</li>
+          </ol>
+          <p class="small">Menu names vary by browser. If you cannot find a home-screen option, copy this page's link and open it in Samsung Internet, Chrome, or Firefox.</p>
+        </div>
+      </details>
+    </div>
+
+    <div id="ios">
+      <details class="browser" open>
+        <summary>Safari (recommended)</summary>
+        <div class="inner">
+          <ol>
+            <li>Open this PBC Prayer page in <strong>Safari</strong>.</li>
+            <li>Tap <strong>Share</strong> (the square with the upward arrow). On some versions, first tap the page menu.</li>
+            <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
+            <li>If shown, leave <strong>Open as Web App</strong> enabled.</li>
+            <li>Keep the name <strong>PBC Prayer</strong> and tap <strong>Add</strong>.</li>
+          </ol>
+          <p class="small">If Add to Home Screen is missing, scroll to the bottom of the Share sheet, tap <strong>Edit Actions</strong>, and add it.</p>
+        </div>
+      </details>
+
+      <details class="browser">
+        <summary>Chrome, Firefox, Brave, Edge, or another iPhone browser</summary>
+        <div class="inner">
+          <ol>
+            <li>On this page, open your browser's <strong>Share</strong> menu and choose <strong>Copy Link</strong>, or copy the address from the address bar.</li>
+            <li>Open <strong>Safari</strong> on your iPhone or iPad.</li>
+            <li>Paste the copied link into Safari's address bar and open it.</li>
+            <li>Tap Safari's <strong>Share</strong> button, then <strong>Add to Home Screen</strong>.</li>
+            <li>Name it <strong>PBC Prayer</strong> and tap <strong>Add</strong>.</li>
+          </ol>
+          <p class="small">Safari offers the most consistent home-screen setup across iPhone and iPad versions.</p>
+        </div>
+      </details>
+    </div>
+
+    <p class="hint">After adding it, look for the <strong>PBC Prayer</strong> icon with the Providence church logo. Tap it, then press <strong>Open Prayer Request Form</strong> to submit a prayer request.</p>
+    <p class="tip"><strong>Having trouble?</strong> Open the prayer form using another browser. If Chrome says “Sorry, unable to open the file,” try Samsung Internet, Firefox, or a private browser session for troubleshooting. You do <strong>not</strong> need to change the church's QR code.</p>
+  </section>
+
+  <p class="footer small">There is no app-store download. An internet connection is required to submit prayer requests.</p>
+  <p class="footer source">Instructions may look a little different depending on your browser version.</p>
+</main>
 <script>
-(function(){var ios=document.getElementById('ios'),android=document.getElementById('android'),buttons=document.querySelectorAll('[data-phone]');function choose(v){ios.classList.toggle('hidden',v!=='ios');android.classList.toggle('hidden',v!=='android');buttons.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-phone')===v))})}buttons.forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-phone'))})});if(/Android/i.test(navigator.userAgent))choose('android');var installed=(window.matchMedia&&matchMedia('(display-mode:standalone)').matches)||navigator.standalone===true;if(installed){document.getElementById('instructions').classList.add('hidden');document.getElementById('description').textContent='Tap the button below to open the prayer request form.'}if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}})();
-</script></body></html>
+(function(){
+  var ios=document.getElementById('ios'),android=document.getElementById('android');
+  var buttons=document.querySelectorAll('[data-phone]');
+  function choose(v){
+    ios.hidden=(v!=='ios');
+    android.hidden=(v!=='android');
+    buttons.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-phone')===v))});
+  }
+  buttons.forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-phone'))})});
+  if(/Android/i.test(navigator.userAgent))choose('android');
+  var installed=(window.matchMedia&&window.matchMedia('(display-mode:standalone)').matches)||navigator.standalone===true;
+  if(installed){
+    document.getElementById('instructions').hidden=true;
+    document.getElementById('description').textContent='Tap the button below to open the prayer request form.';
+  }
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
+  }
+})();
+</script>
+</body>
+</html>
