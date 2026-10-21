@@ -1,0 +1,29 @@
+/**
+ * TEST-ONLY ADDITION TO EXISTING Code.gs
+ *
+ * Paste this function at the end of the church's existing Code.gs; do not
+ * replace or delete any of the working functions.
+ * Redeploy the existing Apps Script web app as a NEW VERSION (same deployment
+ * URL) with Execute as: Me and access: Anyone.
+ * Existing submitPrayerRequests(payload) continues enforcing validation,
+ * appending rows, and respecting bulletin flags.
+ *
+ * Note: GitHub Pages fetch with mode:no-cors cannot inspect the Apps Script
+ * response. Only the new row in Requests verifies delivery.
+ */
+function doPost(e) {
+  try {
+    if (!e || !e.parameter || !e.parameter.payload) {
+      throw new Error('Missing prayer request data.');
+    }
+    var data = JSON.parse(e.parameter.payload);
+    var result = submitPrayerRequests(data);
+    return ContentService.createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: String(error && error.message || error)
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
