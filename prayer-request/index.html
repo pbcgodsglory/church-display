@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#526eff">
+<meta name="description" content="Submit a prayer request to Providence Baptist Church.">
+<link rel="icon" href="../prayer-app/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="../prayer-app/icon-192.png">
+<title>Prayer Requests | Providence Baptist Church</title>
+<style>
+:root{color-scheme:light;--blue:#485ee4;--ink:#17243c;--muted:#546074;--edge:#dbe3f2;--bg:#f2f5fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:680px;margin:0 auto;padding:22px 15px 46px}
+header{text-align:center;padding:25px 16px 22px;background:#fff;border:1px solid var(--edge);border-radius:20px;box-shadow:0 8px 30px #1529580b}
+.logo{width:100px;height:100px;object-fit:contain;border-radius:21px}.eyebrow{font-size:13px;letter-spacing:.09em;color:#4c5bc3;font-weight:800;margin:10px 0 3px}
+h1{font-size:clamp(29px,7vw,39px);line-height:1.15;margin:3px 0 12px}p{margin:7px 0 14px}.muted{color:var(--muted)}
+.panel{padding:24px;background:#fff;border:1px solid var(--edge);border-radius:20px;margin-top:18px;box-shadow:0 8px 30px #15295809}
+fieldset{padding:0;margin:0;border:0;min-width:0}legend,.group-label{font-size:16px;font-weight:750;margin:0 0 9px}
+label.field{display:block;font-size:15px;font-weight:740;margin:20px 0 8px}
+input[type=text],select,textarea{appearance:none;width:100%;border:1.5px solid #bfcbe3;border-radius:11px;padding:13px 14px;font:inherit;color:var(--ink);background:#fff}
+textarea{min-height:145px;resize:vertical}input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid #8399ff;outline-offset:2px}
+.hint{font-size:13px;color:var(--muted);margin:5px 0}.optional{font-weight:400;color:#687589}.check{display:flex;align-items:flex-start;gap:11px;padding:13px;border:1px solid var(--edge);border-radius:12px;cursor:pointer;margin-top:17px}.check input{width:21px;height:21px;flex:none;margin:2px 0;accent-color:var(--blue)}.check strong{display:block}
+.privacy{font-size:14px;color:#46556b;margin:13px 0 0}.required{color:#c02738}
+button.submit{width:100%;background:var(--blue);color:#fff;border:0;border-radius:12px;padding:15px;font:inherit;font-size:18px;font-weight:750;margin-top:19px;cursor:pointer;min-height:57px}
+button.submit:disabled{background:#8895b4;cursor:not-allowed}
+#status{border-radius:12px;padding:14px;margin:18px 0 0;font-weight:650}#status.ok{background:#eaf7ed;color:#14552a}#status.error{background:#fff0f0;color:#921d29}#status.notice{background:#eef2ff;color:#3346a4}
+#security{margin:19px 0 0;min-height:0}.trap{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:19px}a{color:#344bb4}
+@media(max-width:470px){main{padding-top:12px}.panel{padding:20px 17px}header{padding:22px 13px}.logo{width:85px;height:85px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<img class="logo" src="../prayer-app/icon-192.png" alt="Providence Baptist Church logo">
+<div class="eyebrow">PROVIDENCE BAPTIST CHURCH</div>
+<h1>Prayer Requests</h1>
+<p class="muted">We would be honored to pray with you. Send your request using the form below.</p>
+</header>
+<div class="panel">
+<form id="prayer-form" novalidate>
+<div class="muted" style="font-size:14px"><span class="required">*</span> Required field</div>
+<label class="field" for="submittedBy">Your name <span class="optional">(optional)</span></label>
+<input id="submittedBy" name="submittedBy" type="text" autocomplete="name" maxlength="120" placeholder="Your name">
+<label class="field" for="prayerFor">Who is this prayer for? <span class="required">*</span></label>
+<select id="prayerFor" name="prayerFor" required>
+<option value="">Select one</option>
+<option value="Myself">Myself</option>
+<option value="Family or Friend">Family or friend</option>
+<option value="Church or Community">Church or community</option>
+<option value="Other">Other</option>
+</select>
+<label class="field" for="forWhom">Name of person to pray for <span class="optional">(optional)</span></label>
+<input id="forWhom" name="forWhom" type="text" maxlength="120" placeholder="First name or preferred name">
+<label class="field" for="prayerRequest">Prayer request <span id="req-star" class="required">*</span></label>
+<textarea id="prayerRequest" name="prayerRequest" maxlength="4000" required placeholder="Tell us how we can pray for you."></textarea>
+<p class="hint">Please avoid sharing private information about others without their permission.</p>
+<label class="check" for="unspoken">
+<input id="unspoken" name="unspoken" type="checkbox">
+<span><strong>This is an unspoken request</strong><span class="muted"> No details needed; please pray for this concern.</span></span>
+</label>
+<label class="check" for="bulletin">
+<input id="bulletin" name="bulletin" type="checkbox">
+<span><strong>It's okay to include this in the church bulletin</strong><span class="muted"> The church will review it before anything is printed. Leave unchecked to keep it off the bulletin.</span></span>
+</label>
+<p class="privacy">Prayer requests are received by the church team. Only requests marked for the bulletin and separately approved will be listed publicly.</p>
+<div class="trap" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+<div id="security"></div>
+<button class="submit" id="submit" type="submit" disabled>Submit Prayer Request</button>
+<p role="status" aria-live="polite" id="status" class="notice" hidden></p>
+</form>
+</div>
+<footer>Providence Baptist Church · Your request will be submitted securely.<br>Need assistance? Please contact a church leader.</footer>
+</main>
+<script src="config.js"></script>
+<script>
+(function(){
+'use strict';
+var config=window.PBC_PRAYER_CONFIG||{};
+var form=document.getElementById('prayer-form');
+var btn=document.getElementById('submit');
+var status=document.getElementById('status');
+var req=document.getElementById('prayerRequest');
+var unspoken=document.getElementById('unspoken');
+var star=document.getElementById('req-star');
+var widgetId=null;
+var requestId=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():null;
+function show(message,kind){status.textContent=message;status.className=kind;status.hidden=false;}
+function sync(){req.required=!unspoken.checked;req.disabled=unspoken.checked;star.hidden=unspoken.checked;}
+unspoken.addEventListener('change',sync);sync();
+if(!config.endpoint||!config.turnstileSiteKey){
+  show('Preview only — this form is not accepting prayer requests yet. Please continue using the existing church form.', 'notice');
+  return;
+}
+if(!requestId){show('This browser does not support secure submissions. Please use an updated browser.','error');return;}
+var endpoint;
+try{endpoint=new URL(config.endpoint);if(endpoint.protocol!=='https:')throw Error('invalid');}
+catch(e){show('The submission service is not configured correctly.','error');return;}
+var script=document.createElement('script');
+script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+script.async=true;
+script.onload=function(){
+ try {
+  widgetId=window.turnstile.render('#security',{sitekey:config.turnstileSiteKey});
+  btn.disabled=false;
+ } catch(e){show('Security check did not load. Please refresh or use another browser.','error');}
+};
+script.onerror=function(){show('Unable to load the security check. Please try again.','error');};
+document.head.appendChild(script);
+form.addEventListener('submit',async function(ev){
+ ev.preventDefault();
+ if(btn.disabled)return;
+ if(!form.reportValidity())return;
+ var token=window.turnstile&&window.turnstile.getResponse(widgetId);
+ if(!token){show('Please complete the security check before submitting.','error');return;}
+ btn.disabled=true;btn.textContent='Submitting…';status.hidden=true;
+ try{
+  var payload={
+   requestId:requestId,
+   submittedBy:document.getElementById('submittedBy').value.trim(),
+   prayerFor:document.getElementById('prayerFor').value,
+   forWhom:document.getElementById('forWhom').value.trim(),
+   prayerRequest:unspoken.checked?'':req.value.trim(),
+   unspoken:unspoken.checked,
+   bulletin:document.getElementById('bulletin').checked,
+   website:document.getElementById('website').value,
+   turnstileToken:token
+  };
+  if(!payload.prayerFor||(!payload.unspoken&&!payload.prayerRequest)){show('Please complete the required fields.','error');return;}
+  var response=await fetch(endpoint.href,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'omit',cache:'no-store',body:JSON.stringify(payload)});
+  var result=await response.json();
+  if(!response.ok||!result.ok)throw Error((result&&result.error)||'Unable to submit. Please try again.');
+  form.reset();sync();requestId=crypto.randomUUID();
+  show('Your prayer request has been received. Thank you for sharing it with us.','ok');
+  status.scrollIntoView({behavior:'smooth',block:'nearest'});
+ }catch(e){
+  show(e.message||'Could not confirm that the request was received. Please contact the church before trying again.','error');
+ }finally{
+  btn.disabled=false;btn.textContent='Submit Prayer Request';
+  if(window.turnstile&&widgetId!==null)window.turnstile.reset(widgetId);
+ }
+});
+})();
+</script>
+</body>
+</html>
