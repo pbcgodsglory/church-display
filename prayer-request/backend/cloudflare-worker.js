@@ -46,6 +46,8 @@ export default {
     const prayerRequest=trim(p.prayerRequest,4000);
     const unspoken=p.unspoken===true;
     const bulletin=p.bulletin===true;
+    const requestId=trim(p.requestId,60);
+    if (!/^[a-f0-9-]{36}$/i.test(requestId)) return respond({error:'Please refresh the page and try again.'},400);
     if (!prayerFor || (!unspoken && !prayerRequest)) {
       return respond({error:'Please fill in the required fields.'},400);
     }
@@ -70,7 +72,7 @@ export default {
         headers:{'content-type':'application/json'},
         body:JSON.stringify({
           auth:env.APP_SHARED_SECRET,
-          submittedBy, prayerFor, forWhom, prayerRequest, unspoken, bulletin
+          submittedBy, prayerFor, forWhom, prayerRequest, unspoken, bulletin, requestId
         }),
         redirect:'follow'
       });
