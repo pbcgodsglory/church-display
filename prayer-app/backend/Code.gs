@@ -103,6 +103,7 @@ function submitPrayerRequests(payload) {
  * A checkbox click triggers this; a web-form submission will not.
  */
 function onEdit(e) {
+  repairManualCheckboxes_(e);
   hubHandleEdit_(e);
   if (!e || !e.range || e.range.getNumRows() !== 1 ||
       e.range.getNumColumns() !== 1) return;
@@ -146,6 +147,26 @@ function onEdit(e) {
     console.error(error);
   } finally {
     lock.releaseLock();
+  }
+}
+
+/** Restore accidentally cleared Manual Entry controls without changing valid ticks. */
+function repairManualCheckboxes_(e) {
+  if (!e || !e.range || e.range.getSheet().getName() !== MANUAL_SHEET_NAME) return;
+  const sheet = e.range.getSheet();
+  const controls = sheet.getRange('B7:B9');
+  const values = controls.getValues(), rules = controls.getDataValidations();
+  let checkboxRule;
+  for (let i = 0; i < 3; i++) {
+    const rule = rules[i][0], value = values[i][0];
+    const validRule = rule && rule.getCriteriaType() === SpreadsheetApp.DataValidationCriteria.CHECKBOX;
+    if (validRule && typeof value === 'boolean') continue;
+    if (!checkboxRule) checkboxRule = SpreadsheetApp.newDataValidation()
+      .requireCheckbox().setAllowInvalid(false).build();
+    const cell = sheet.getRange(i + 7,2);
+    cell.setDataValidation(checkboxRule);
+    // A cleared/invalid cell returns unchecked. Never infer consent or submit it.
+    cell.setValue(value === true);
   }
 }
 
