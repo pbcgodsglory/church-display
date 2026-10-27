@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Providence Baptist Church Prayer Requests",
   "short_name": "PBC Prayer",
-  "description": "Open the Providence Baptist Church prayer request form",
+  "description": "Prayer requests, bulletin-permitted prayers, and church announcements",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -23,3 +23,4 @@
     }
   ]
 }
+

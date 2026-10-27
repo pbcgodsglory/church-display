@@ -1,0 +1,32 @@
+# Prayer hub integration
+
+The working `/prayer-form/` HTML and `submitPrayerRequests` / `doPost` handlers are unchanged.
+The hub uses the existing Apps Script deployment with `?page=hub`; its default route still serves the original form.
+
+## Files in the existing bound Apps Script project
+
+- `Hub.gs`: additive public-list and change-queue functions.
+- `HubPage.html`: list and change-request page; uses `google.script.run` for confirmed submissions.
+- `Code.gs`: current existing automation with only two hooks: `doGet(e)` routes `page=hub`, and `onEdit(e)` invokes `hubHandleEdit_(e)`.
+
+The live spreadsheet stays private. Never publish the entire sheet, Requests tab, or Bulletin Ready tab. Bulletin Ready includes New requests and submitter information; the public API reads Requests and independently requires `OK for Bulletin = Yes`, an active status (not Answered, Remove or Rejected), not completed, and no archive date. It returns only an opaque reference, the person needing prayer, and bulletin wording (or original prayer text). Unspoken always displays as Unspoken. No prayer data is saved in GitHub or the service-worker cache.
+
+## Church review
+
+1. New prayers still arrive in Requests with Review Status New. At the user’s direction, OK for Bulletin = Yes automatically includes active prayers online without a separate approval step. Private requests never appear.
+2. Visitor changes enter Change Requests with status Pending. Review the person, action, requester and Details before approving. For an Update, Details becomes the public Bulletin Wording; edit it first if needed. Original request text remains intact.
+3. Set Change Requests column H to Approved in the Google Sheets UI. The existing simple onEdit trigger applies the reviewed change. Remove sets the original prayer's status to Remove. Update sets Bulletin Wording. The result column records Applied with a timestamp.
+4. Rejected does nothing. Other/unlisted prayers, stale targets, and ambiguous duplicates become Needs review. Locate these in Requests manually and mark the queue item Resolved when finished. The visitor cannot approve anything.
+5. Completed/archive behavior remains the existing automation. Restoring an archived prayer resets it to New; it returns online automatically if OK for Bulletin is Yes.
+
+Only single-cell UI approvals trigger processing; connector/API edits and bulk pasted approval ranges do not. This deliberately avoids accidentally approving a batch. Public updates do not modify the list until reviewed. Multiple prayers in one submission are distinguished by a fingerprint of the original row; identical duplicate rows require manual review.
+
+## Deployment and rollback
+
+Save the files, preserve the existing deployment URL and access settings, and publish a new version of the existing web app. Do not create a replacement form deployment or replace Index.html. The previous deployment was version 5. Rollback by selecting that version in Manage deployments; roll back the matching GitHub hub commit as well.
+
+The private Change Requests tab has columns: Received At, Change ID, Prayer Reference, Prayer For, Action, Requested By, Details, Review Status, Result. `setupPrayerHub_` documents optional sheet setup; the tab was created through Sheets tools during installation. A synthetic test row is retained as Resolved for an audit trail and contains no real prayer information.
+
+## Validation
+
+Run `node prayer-app/backend/hub.test.cjs`. This checks the public field allowlist, consent/completion/archive filtering and automatic inclusion of New bulletin-permitted requests, unspoken masking, reviewed removals, and stale/private/manual-target rejection. Browser verification also covers confirmed queue receipt and the manual-target approval guard. Existing form content and submission endpoint are compared against the original repository blob before publishing.

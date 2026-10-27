@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#526eff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="PBC Prayer">
-  <meta name="description" content="Step-by-step instructions to save Providence Baptist Church prayer requests to your phone's home screen.">
+  <meta name="description" content="Prayer requests, bulletin-permitted prayers, and announcements for Providence Baptist Church.">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" type="image/png" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <title>PBC Prayer — Home Screen Instructions</title>
+  <title>PBC Prayer | Providence Baptist Church</title>
   <style>
     :root{color-scheme:light}
     *{box-sizing:border-box}
@@ -43,6 +43,7 @@
     li{padding:5px 0}
     .hint{background:#eef2ff;border-left:4px solid #526eff;border-radius:10px;padding:13px 14px;margin:16px 0 7px}
     .tip{background:#f6f8ff;border-radius:10px;padding:12px 14px}
+    .hub-link{display:block;padding:17px 0;text-decoration:none;font-weight:750;border-bottom:1px solid #dbe3fb}.hub-link:last-child{border-bottom:0}.hub-link span{display:block;font-size:15px;font-weight:400;color:#4d5666;margin-top:4px}
     .footer{text-align:center;margin:22px auto 0}
     .source{font-size:13px;color:#5c6573}
     @media(max-width:420px){.card{padding:17px 14px}.browser summary{padding:13px 11px}header{padding:20px 15px}}
@@ -54,10 +55,18 @@
     <img class="logo" src="icon-192.png" alt="Providence Baptist Church cross and sunrise logo">
     <div class="brand">PROVIDENCE BAPTIST CHURCH</div>
     <h1>PBC Prayer</h1>
-    <p class="muted" id="description">Save PBC Prayer to your phone's home screen for quick access without scanning the QR code again.</p>
+    <p class="muted" id="description">Pray together. Stay connected. Your church links in one place.</p>
   </header>
 
-  <a class="action" id="open" target="_blank" rel="noopener noreferrer external" href="https://pbcgodsglory.github.io/church-display/prayer-form/">Open Prayer Request Form</a>
+  <a class="action" id="open" target="_blank" rel="noopener noreferrer external" href="https://pbcgodsglory.github.io/church-display/prayer-form/">Submit Prayer Request</a>
+
+  <nav class="card" aria-label="Church links">
+    <h2>Prayer &amp; church life</h2>
+    <a class="hub-link" target="_blank" rel="noopener noreferrer" href="https://script.google.com/macros/s/AKfycbzfHH1FZClKHemKs3p_dbiFEIMJBu58_DgFVf5LSjF9vGsVLwvEfPbBqJ2ZCGonKTW0/exec?page=hub">View Prayer List<span>Pray for active requests marked OK for Bulletin.</span></a>
+    <a class="hub-link" target="_blank" rel="noopener noreferrer" href="https://script.google.com/macros/s/AKfycbzfHH1FZClKHemKs3p_dbiFEIMJBu58_DgFVf5LSjF9vGsVLwvEfPbBqJ2ZCGonKTW0/exec?page=hub">Request an Update or Removal<span>Send a change for church review before it takes effect.</span></a>
+    <a class="hub-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/presentation/d/e/2PACX-1vQDMOCd19wMk0mzklb9YwSEBaHw7HYF9wQUN68cnBF-No0XfExwFWu7cy1wzdyK9NCirwODq15k0P_T/pub?start=false&amp;loop=false&amp;delayms=10000">Church Announcements<span>Browse the same slides shown on the church TV.</span></a>
+    <a class="hub-link" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/gardnerp5362">Church Facebook Page<span>Visit Providence Baptist Church on Facebook.</span></a>
+  </nav>
 
   <section class="card" id="instructions" aria-labelledby="heading-instructions">
     <h2 id="heading-instructions">Add PBC Prayer to your phone</h2>
@@ -180,7 +189,7 @@
       </details>
     </div>
 
-    <p class="hint">After adding it, look for the <strong>PBC Prayer</strong> icon with the Providence church logo. Tap it, then press <strong>Open Prayer Request Form</strong> to submit a prayer request.</p>
+    <p class="hint">After adding it, look for the <strong>PBC Prayer</strong> icon with the Providence church logo. Tap it, then press <strong>Submit Prayer Request</strong> to submit a prayer request, or choose another church link.</p>
     <p class="tip"><strong>Having trouble?</strong> Open the prayer form using another browser. If the form does not open, check your internet connection, refresh the page, or contact the church for help.</p>
   </section>
 
@@ -201,7 +210,7 @@
   var installed=(window.matchMedia&&window.matchMedia('(display-mode:standalone)').matches)||navigator.standalone===true;
   if(installed){
     document.getElementById('instructions').hidden=true;
-    document.getElementById('description').textContent='Tap the button below to open the prayer request form.';
+    document.getElementById('description').textContent='Prayer requests, church updates, and announcements—always close at hand.';
   }
   if('serviceWorker' in navigator){
     window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
