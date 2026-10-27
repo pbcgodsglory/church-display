@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PBC Prayer List & Changes</title>
+<style>*{box-sizing:border-box}body{font:17px/1.55 system-ui,sans-serif;color:#172035;background:#f3f6ff;margin:0}main{max-width:680px;margin:auto;padding:24px 18px}h1{line-height:1.2}section,article{background:white;border:1px solid #dbe3fb;border-radius:16px;padding:20px;margin:16px 0}article p{white-space:pre-wrap;overflow-wrap:anywhere}h3{margin:0}a{color:#2940bb}label{display:block;margin:15px 0 5px;font-weight:650}input,textarea,select,button{font:inherit;padding:12px;width:100%;border:1px solid #8d99b3;border-radius:8px}button{background:#4055dc;color:white;font-weight:700;margin-top:18px;cursor:pointer}button:disabled{opacity:.6}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #526eff;outline-offset:3px}.small{font-size:14px;color:#4d5666}[hidden]{display:none!important}.trap{position:absolute;left:-10000px}#status{white-space:pre-wrap}</style></head>
+<body><main><a href="https://pbcgodsglory.github.io/church-display/prayer-app/" target="_top">← PBC Prayer home</a><h1>Pray with our church</h1>
+<p>Active requests marked OK for Bulletin appear here automatically. Submitter information stays private.</p>
+<section aria-labelledby="list-title"><h2 id="list-title">Prayer list</h2><p id="list-status" role="status">Loading the current prayer list…</p><div id="prayers"></div><button id="refresh" type="button">Refresh prayer list</button></section>
+<section id="changes" aria-labelledby="change-title"><h2 id="change-title">Request an update or removal</h2><p>Changes wait for church review. Submitting this form does not change the prayer list or bulletin immediately.</p>
+<form id="change-form"><label for="reference">Which prayer request?</label><select id="reference" required disabled><option value="">Loading…</option></select>
+<div id="other-fields" hidden><label for="prayer-for">Person needing prayer</label><input id="prayer-for" maxlength="120"><p class="small">For a private request or one not shown above, the church will locate and review it manually.</p></div>
+<label for="action">What would you like to request?</label><select id="action"><option value="Update">Update the prayer request</option><option value="Remove">Remove the prayer request</option></select>
+<label for="requested-by">Your name (for the church reviewer only)</label><input id="requested-by" autocomplete="name" maxlength="100" required>
+<label for="details">Updated wording or reason for removal</label><textarea id="details" rows="5" maxlength="2000" required></textarea>
+<div class="trap" aria-hidden="true"><label for="website">Leave blank</label><input id="website" tabindex="-1" autocomplete="off"></div>
+<button id="send" disabled>Send for church review</button><p id="status" role="status" aria-live="polite"></p></form></section>
+<p class="small">This page requires an internet connection. Please refresh before relying on the current list.</p></main>
+<script src="./transport.js"></script>
+<script>
+const $=id=>document.getElementById(id); let changeId=crypto.randomUUID();
+function choose(){const other=$('reference').value==='other';$('other-fields').hidden=!other;$('prayer-for').required=other;}
+$('reference').addEventListener('change',choose);
+function load(){
+  $('refresh').disabled=true; $('list-status').textContent='Loading the current prayer list…'; $('prayers').replaceChildren();
+  PBC_HUB_API.list().then(rows=>{
+    const previous=$('reference').value; $('reference').replaceChildren();
+    const placeholder=new Option('Choose a prayer request','');$('reference').add(placeholder);
+    rows.forEach(row=>{const article=document.createElement('article'),heading=document.createElement('h3'),p=document.createElement('p');heading.textContent=row.name;p.textContent=row.text;article.append(heading,p);$('prayers').append(article);$('reference').add(new Option(row.name+' — '+row.text.slice(0,65),row.id));});
+    $('reference').add(new Option('Other request / not listed','other'));
+    if(Array.from($('reference').options).some(o=>o.value===previous))$('reference').value=previous;
+    $('reference').disabled=false;$('send').disabled=false;choose();
+    $('list-status').textContent=rows.length?'Current as of '+new Date().toLocaleString()+'.':'No bulletin-permitted prayer requests are currently available.';$('refresh').disabled=false;
+  }).catch(()=>{
+    $('list-status').textContent='The prayer list could not be loaded. Please refresh or contact the church.';
+    $('reference').replaceChildren(new Option('Other request / not listed','other'));$('reference').disabled=false;$('send').disabled=false;choose();$('refresh').disabled=false;
+  });
+}
+$('refresh').addEventListener('click',load);
+$('change-form').addEventListener('submit',e=>{
+ e.preventDefault();if(!$('change-form').reportValidity())return;
+ $('send').disabled=true;$('status').textContent='Sending your request…';
+ const reference=$('reference').value;
+ PBC_HUB_API.submit({changeId,reference:reference==='other'?'':reference,prayerFor:$('prayer-for').value,action:$('action').value,requestedBy:$('requested-by').value,details:$('details').value,website:$('website').value}).then(result=>{
+  if(!result||result.success!==true){$('status').textContent='Your request was not confirmed. Please try again.';$('send').disabled=false;return;}
+  $('change-form').reset();changeId=crypto.randomUUID();choose();$('status').textContent='Your request was received and is waiting for church review. The prayer list has not been changed.';$('send').disabled=false;
+ }).catch(error=>{$('status').textContent=error.message||'Unable to confirm your request. Please try again.';$('send').disabled=false;});
+});load();
+if(location.hash==='#changes')$('changes').scrollIntoView();
+</script></body></html>

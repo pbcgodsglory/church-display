@@ -1,6 +1,21 @@
 // Additive hub extension. Keep existing submission/archive functions unchanged.
 const HUB_CHANGE_HEADERS_ = ['Received At','Change ID','Prayer Reference','Prayer For','Action','Requested By','Details','Review Status','Result'];
 
+// Anonymous data transport for the church-hosted page. Never returns private rows.
+function hubApi_(p) {
+  let result;
+  try {
+    if (p.hubApi === 'list') result = {ok:true,prayers:getHubPrayers()};
+    else if (p.hubApi === 'receipt' && /^[a-f0-9-]{36}$/i.test(p.changeId || '')) {
+      const queue = hubQueue_(getChurchSpreadsheet_());
+      const found = queue.getLastRow()>1 && !!queue.getRange(2,2,queue.getLastRow()-1,1)
+        .createTextFinder(p.changeId).matchEntireCell(true).findNext();
+      result = {ok:true,received:found};
+    } else result = {ok:false};
+  } catch(error) { result = {ok:false}; }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
 function hubPage_() {
   return HtmlService.createHtmlOutputFromFile('HubPage').setTitle('PBC Prayer List & Changes')
     .addMetaTag('viewport','width=device-width, initial-scale=1');

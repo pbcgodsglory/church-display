@@ -1,13 +1,15 @@
 # Prayer hub integration
 
 The working `/prayer-form/` HTML and `submitPrayerRequests` / `doPost` handlers are unchanged.
-The hub uses the existing Apps Script deployment with `?page=hub`; its default route still serves the original form.
+The public hub is hosted at `/prayer-app/prayers/` on the church website. Browsers contact the existing Apps Script endpoint with credentials omitted, avoiding Google multi-account navigation problems. The default Apps Script route still serves the original form; its older `?page=hub` UI remains compatible but is no longer linked from the home screen.
 
 ## Files in the existing bound Apps Script project
 
 - `Hub.gs`: additive public-list and change-queue functions.
 - `HubPage.html`: list and change-request page; uses `google.script.run` for confirmed submissions.
 - `Code.gs`: current existing automation with only two hooks: `doGet(e)` routes `page=hub`, and `onEdit(e)` invokes `hubHandleEdit_(e)`.
+- `doGet(e)` also serves `hubApi=list` and `hubApi=receipt`; `doPost(e)` routes only `hubPayload` to the existing change-request handler. Original prayer-form payloads keep their existing handling.
+- `../prayers/transport.js`: anonymous background GET/POST requests. An opaque POST response is never treated as success; an unguessable change-ID receipt must confirm delivery. Receipt responses contain only a boolean, never requester names or details.
 
 The live spreadsheet stays private. Never publish the entire sheet, Requests tab, or Bulletin Ready tab. Bulletin Ready includes New requests and submitter information; the public API reads Requests and independently requires `OK for Bulletin = Yes`, an active status (not Answered, Remove or Rejected), not completed, and no archive date. It returns only an opaque reference, the person needing prayer, and bulletin wording (or original prayer text). Unspoken always displays as Unspoken. No prayer data is saved in GitHub or the service-worker cache.
 

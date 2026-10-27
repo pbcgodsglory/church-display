@@ -37,6 +37,7 @@ const COMPLETED_COLUMN = 12; // L
 const ARCHIVED_AT_COLUMN = 13; // M
 
 function doGet(e) {
+  if (e && e.parameter && e.parameter.hubApi) return hubApi_(e.parameter);
   if (e && e.parameter && e.parameter.page === 'hub') return hubPage_();
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Prayer Request | Providence Baptist Church')
@@ -367,6 +368,10 @@ function sheetSafe_(value) {
  */
 function doPost(e) {
   try {
+    if (e && e.parameter && e.parameter.hubPayload) {
+      return ContentService.createTextOutput(JSON.stringify(submitHubChange(JSON.parse(e.parameter.hubPayload))))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     if (!e || !e.parameter || !e.parameter.payload) {
       throw new Error('Missing prayer request data.');
     }
