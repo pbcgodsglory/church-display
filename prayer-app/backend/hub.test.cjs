@@ -13,4 +13,21 @@ ctx.hubApplyChange_({},queue,2);assert.equal(writes[0][0],9);assert.equal(writes
 writes.length=0;row[7]='No';assert.throws(()=>ctx.hubApplyChange_({},queue,2));assert.equal(writes.length,0);row[7]='Yes';
 queue.getRange=()=>({getValues:()=>[[new Date(),'change','', 'Person','Remove','Reviewer','Reason','Approved','']]});assert.throws(()=>ctx.hubApplyChange_({},queue,2));assert.equal(writes.length,0);
 assert.throws(()=>ctx.submitHubChange({website:'bot'}));
+// Approving revised wording updates the actual reason, not just bulletin wording.
+let edited,applied;const updateRow=[...row];updateRow[5]='Unspoken';updateRow[6]='Yes';updateRow[8]='New';updateRow[9]='Keep this admin note';
+let action='Update',review='Pending',wording='Revised prayer reason';
+const updateQueue={getRange:()=>({getValues:()=>[[new Date(),'change',ctx.hubReference_(updateRow),'Person',action,'Reviewer',wording,review,'']],setValue:v=>{applied=v;}})};
+const updateSheet={getLastRow:()=>2,getRange:(r,c,n,w)=>{
+ if(r===2&&c===1)return {getValues:()=>[updateRow]};
+ assert.equal(c,6);assert.equal(w,6);
+ return {getValues:()=>[updateRow.slice(5,11)],getFormulas:()=>[['','','','','=\"Keep this admin note\"','']],setValues:v=>{edited=v[0];}};
+}};ctx.mustGetSheet_=()=>updateSheet;
+ctx.hubApplyChange_({},updateQueue,2);assert.equal(edited,undefined);assert.equal(applied,undefined);
+review='Rejected';ctx.hubApplyChange_({},updateQueue,2);assert.equal(edited,undefined);
+review='Approved';ctx.hubApplyChange_({},updateQueue,2);
+assert.equal(edited[0],wording);assert.equal(edited[1],'No');assert.equal(edited[2],'Yes');assert.equal(edited[3],'New');assert.equal(edited[4],'=\"Keep this admin note\"');assert.equal(edited[5],wording);assert.match(applied,/^Applied /);
+const publicUpdated=[...updateRow];publicUpdated.splice(5,6,...edited);assert.equal(ctx.hubPublicRows_([publicUpdated])[0].text,wording);
+wording='Unspoken';ctx.hubApplyChange_({},updateQueue,2);assert.equal(edited[1],'Yes');assert.equal(edited[0],'Unspoken');
+wording='=SUM(1,2)';ctx.hubApplyChange_({},updateQueue,2);assert.equal(edited[0],"'=SUM(1,2)");assert.equal(edited[5],edited[0]);
+console.log('PASS: only approved updates change reason and bulletin wording together; unspoken stays consistent; consent/status/notes/formulas preserved.');
 console.log('PASS: public-field allowlist, bulletin consent and active/archive gates, New requests appear automatically, unspoken masking, reviewed removal, private/manual-target rejection, honeypot.');

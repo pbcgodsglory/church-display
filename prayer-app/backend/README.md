@@ -16,8 +16,8 @@ The live spreadsheet stays private. Never publish the entire sheet, Requests tab
 ## Church review
 
 1. New prayers still arrive in Requests with Review Status New. At the user’s direction, OK for Bulletin = Yes automatically includes active prayers online without a separate approval step. Private requests never appear.
-2. Visitor changes enter Change Requests with status Pending. Review the person, action, requester and Details before approving. For an Update, Details becomes the public Bulletin Wording; edit it first if needed. Original request text remains intact.
-3. Set Change Requests column H to Approved in the Google Sheets UI. The existing simple onEdit trigger applies the reviewed change. Remove sets the original prayer's status to Remove. Update sets Bulletin Wording. The result column records Applied with a timestamp.
+2. Visitor changes enter Change Requests with status Pending. Review the person, action, requester and Details before approving. For an Update, Details becomes both Prayer Request (column F) and Bulletin Wording (column K); edit it first if needed. Unspoken (column G) becomes Yes only when the approved wording is Unspoken, otherwise No.
+3. Set Change Requests column H to Approved in the Google Sheets UI. The existing simple onEdit trigger applies the reviewed change. Remove sets the original prayer's status to Remove. Update writes the reason, unspoken flag, and bulletin wording together while preserving consent, review status, admin notes and formulas. The result column records Applied with a timestamp.
 4. Rejected does nothing. Other/unlisted prayers, stale targets, and ambiguous duplicates become Needs review. Locate these in Requests manually and mark the queue item Resolved when finished. The visitor cannot approve anything.
 5. Completed/archive behavior remains the existing automation. Restoring an archived prayer resets it to New; it returns online automatically if OK for Bulletin is Yes.
 

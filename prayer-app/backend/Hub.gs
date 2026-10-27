@@ -82,7 +82,15 @@ function hubApplyChange_(ss, queue, row) {
   if (change[4] === 'Remove') sheet.getRange(target.row,9).setValue('Remove');
   else if (change[4] === 'Update') {
     const wording = validatedText_(String(change[6]),2000,'Approved wording');
-    sheet.getRange(target.row,11).setValue(sheetSafe_(wording));
+    // Write the reason, unspoken flag, and bulletin wording together. Preserve
+    // consent, review status, admin notes, and any formulas in those cells.
+    const fields = sheet.getRange(target.row,6,1,6);
+    const current = fields.getValues()[0], formulas = fields.getFormulas()[0];
+    const revised = current.map((value,index)=>formulas[index] || value);
+    revised[0] = sheetSafe_(wording);
+    revised[1] = /^unspoken$/i.test(wording) ? 'Yes' : 'No';
+    revised[5] = sheetSafe_(wording);
+    fields.setValues([revised]);
   } else throw new Error('Unknown action.');
   queue.getRange(row,9).setValue('Applied ' + new Date().toISOString());
 }
