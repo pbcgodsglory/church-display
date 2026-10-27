@@ -72,15 +72,6 @@
       h2{font-size:20px}
       .brand-mark{width:min(100%,330px)}
     }
-    .install-card{background:#fff;border:1px solid #dce4f7;border-radius:18px;padding:20px 22px;margin:18px 0;box-shadow:0 4px 14px rgba(0,0,0,.03)}
-    .install-header{display:flex;align-items:center;gap:14px}
-    .install-logo{height:70px;width:70px;flex:none;object-fit:contain;border:1px solid #e6eafa;border-radius:14px;background:#fff;padding:5px}
-    .install-card h2{margin:0 0 6px}
-    .install-card p{color:#515a69}
-    .install-link{display:block;padding:14px 15px;margin-top:13px;min-height:54px;border-radius:11px;border:2px solid #526ef1;color:#425bd2;background:#fff;text-decoration:none;text-align:center;font-weight:800;font-size:18px}
-    .install-link:hover{background:#f5f8ff}
-    .install-link:focus-visible{outline:3px solid #526ef1;outline-offset:3px}
-    @media(max-width:430px){.install-card{padding:17px}.install-logo{height:62px;width:62px}}
   </style>
 </head>
 <body>
@@ -124,17 +115,7 @@
       <div id="feedback" class="feedback hidden" role="alert" aria-live="assertive"></div>
     </div>
   </form>
-  <section class="install-card" aria-labelledby="install-heading">
-    <div class="install-header">
-      <img class="install-logo" src="data:image/png;base64,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" alt="Providence Baptist Church logo symbol" width="70" height="70">
-      <div>
-        <h2 id="install-heading">Save PBC Prayer to Your Phone</h2>
-        <p>Get quick access to this form without scanning the QR code again.</p>
-      </div>
-    </div>
-    <a class="install-link" href="https://pbcgodsglory.github.io/church-display/prayer-app/" target="_blank" rel="noopener noreferrer">See iPhone and Android Instructions →</a>
-    <p class="hint">Choose Add to Home Screen on the setup page to get the church logo icon.</p>
-  </section>
+  <p class="footer"><a href="../prayer-app/">← Back to PBC Prayer</a></p>
   <div class="footer">Providence Baptist Church · Seeking to glorify God</div>
 </main>
 
