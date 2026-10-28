@@ -6,6 +6,7 @@ function hubApi_(p) {
   let result;
   try {
     if (p.hubApi === 'list') result = {ok:true,prayers:getHubPrayers()};
+    else if (p.hubApi === 'announcements') result = {ok:true,announcements:getAppAnnouncements_()};
     else if (p.hubApi === 'receipt' && /^[a-f0-9-]{36}$/i.test(p.changeId || '')) {
       const queue = hubQueue_(getChurchSpreadsheet_());
       const found = queue.getLastRow()>1 && !!queue.getRange(2,2,queue.getLastRow()-1,1)

@@ -47,6 +47,12 @@
     #instructions>summary{font-size:23px;font-weight:750;line-height:1.3;cursor:pointer;list-style-position:inside}
     #instructions>summary::marker{color:#4c65e9}
     .install-instructions{padding-top:16px}
+    .announcements{background:#fffdf6;border-color:#e5d9b5;border-top:4px solid #b18b32}
+    .announcements .eyebrow{color:#6e5621;font-size:13px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;margin:0 0 7px}
+    .announcements h2{color:#172035;margin-bottom:0}
+    .announcements article{border-top:1px solid #e9e0c9;padding-top:16px;margin-top:16px}
+    .announcements h3{font-size:19px;margin:0 0 6px}
+    .announcements article p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;color:#3f4858}
     .footer{text-align:center;margin:22px auto 0}
     .source{font-size:13px;color:#5c6573}
     @media(max-width:420px){.card{padding:17px 14px}.browser summary{padding:13px 11px}header{padding:20px 15px}}
@@ -60,6 +66,12 @@
     <h1>PBC Prayer</h1>
     <p class="muted" id="description">Pray together. Stay connected. Your church links in one place.</p>
   </header>
+
+  <section class="card announcements" id="app-announcements" aria-labelledby="announcements-heading" hidden>
+    <p class="eyebrow">Church notices</p>
+    <h2 id="announcements-heading">This Week at Providence</h2>
+    <div id="app-announcement-list"></div>
+  </section>
 
   <a class="action" id="open" target="_blank" rel="noopener noreferrer external" href="https://pbcgodsglory.github.io/church-display/prayer-form/">Submit Prayer Request</a>
 
@@ -203,6 +215,7 @@
   <p class="footer small">There is no app-store download. An internet connection is required to submit prayer requests.</p>
   <p class="footer source">Instructions may look a little different depending on your browser version.</p>
 </main>
+<script src="./announcements.js" defer></script>
 <script>
 (function(){
   var ios=document.getElementById('ios'),android=document.getElementById('android');

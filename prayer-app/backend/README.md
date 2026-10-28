@@ -13,7 +13,15 @@ The public hub is hosted at `/prayer-app/prayers/` on the church website. Browse
 
 The live spreadsheet stays private. Never publish the entire sheet, Requests tab, or Bulletin Ready tab. Bulletin Ready includes New requests and submitter information; the public API reads Requests and independently requires `OK for Bulletin = Yes`, an active status (not Answered, Remove or Rejected), not completed, and no archive date. It returns only an opaque reference, the person needing prayer, and bulletin wording (or original prayer text). Unspoken always displays as Unspoken. No prayer data is saved in GitHub or the service-worker cache.
 
-## Church review
+## App home announcements
+
+Edit the private **App Announcements** tab: Title, Message, Show in App?, Start Date, End Date. Only checked notices with a title/message and an active date range appear publicly. Blank dates mean no date limit; end dates include that entire day in the spreadsheet’s America/Chicago timezone. Invalid or reversed dates stay off the app. Put important items in the top rows: the app shows the first three active notices. Uncheck a notice to hide it.
+
+The app home fetches only the public title/message fields through `hubApi=announcements`, with Google account cookies omitted. It refreshes when opened, when returning to the app, and every minute while visible. It hides the section when no active notices exist or the current notices cannot be verified online. Announcement data is not stored in the service-worker cache. The initial welcome notice is a replaceable example, not an event announcement.
+
+Apps Script also needs `Announcements.gs` in the existing project. Keep its function names ending in underscores; the public transport remains the same endpoint. Run `node prayer-app/backend/announcements.test.cjs` to verify publishing, dates, row priority and field allowlists.
+
+## Prayer and change review
 
 Manual Entry checkboxes B7:B9 are repaired on edits to that tab. Cleared or invalid cells return unchecked; valid existing checkmarks remain as selected. Clearing Submit never creates a request, and repair never grants bulletin consent. Removing validation through menus alone is repaired on the next cell edit; this is automatic restoration, not a restriction on the spreadsheet owner.
 
