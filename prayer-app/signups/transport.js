@@ -11,11 +11,11 @@
     events:async()=>{const data=await read({signupApi:'events'});if(!Array.isArray(data.events))throw Error('Unable to load sign-ups.');return data.events;},
     submit:async payload=>{
       // Check first when retrying. Never infer success from an opaque POST response.
-      try{if((await read({signupApi:'receipt',signupId:payload.signupId})).received===true)return {success:true};}catch(error){}
+      try{const receipt=await read({signupApi:'receipt',signupId:payload.signupId});if(receipt.received===true)return Object.assign({success:true},receipt);}catch(error){}
       try{await fetch(endpoint,{method:'POST',mode:'no-cors',credentials:'omit',body:new URLSearchParams({signupPayload:JSON.stringify(payload)}),signal:AbortSignal.timeout(25000)});}catch(error){}
       for(let attempt=0;attempt<4;attempt++){
         if(attempt)await new Promise(resolve=>setTimeout(resolve,1500));
-        try{if((await read({signupApi:'receipt',signupId:payload.signupId})).received===true)return {success:true};}catch(error){}
+        try{const receipt=await read({signupApi:'receipt',signupId:payload.signupId});if(receipt.received===true)return Object.assign({success:true},receipt);if(receipt.error){const error=Error(receipt.error);error.rejected=true;throw error;}}catch(error){if(error.rejected)throw error;}
       }
       throw Error('We could not confirm your sign-up. Your entries are still here. Try again to check or resend safely, or contact the church.');
     }
