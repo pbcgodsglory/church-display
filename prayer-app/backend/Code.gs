@@ -37,6 +37,7 @@ const COMPLETED_COLUMN = 12; // L
 const ARCHIVED_AT_COLUMN = 13; // M
 
 function doGet(e) {
+  if (e && e.parameter && e.parameter.signupApi) return signupApi_(e.parameter);
   if (e && e.parameter && e.parameter.hubApi) return hubApi_(e.parameter);
   if (e && e.parameter && e.parameter.page === 'hub') return hubPage_();
   return HtmlService.createHtmlOutputFromFile('Index')
@@ -103,6 +104,7 @@ function submitPrayerRequests(payload) {
  * A checkbox click triggers this; a web-form submission will not.
  */
 function onEdit(e) {
+  signupHandleEdit_(e);
   repairManualCheckboxes_(e);
   hubHandleEdit_(e);
   if (!e || !e.range || e.range.getNumRows() !== 1 ||
@@ -389,6 +391,10 @@ function sheetSafe_(value) {
  */
 function doPost(e) {
   try {
+    if (e && e.parameter && e.parameter.signupPayload) {
+      return ContentService.createTextOutput(JSON.stringify(submitEventSignup(JSON.parse(e.parameter.signupPayload))))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     if (e && e.parameter && e.parameter.hubPayload) {
       return ContentService.createTextOutput(JSON.stringify(submitHubChange(JSON.parse(e.parameter.hubPayload))))
         .setMimeType(ContentService.MimeType.JSON);

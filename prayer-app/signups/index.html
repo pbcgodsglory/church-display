@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#526eff"><meta name="description" content="Sign up for events and volunteer opportunities at Providence Baptist Church.">
+  <title>Church Sign-ups | Providence Baptist Church</title>
+  <link rel="icon" href="../icon-192.png"><link rel="stylesheet" href="./styles.css">
+  <script src="./transport.js" defer></script><script src="./app.js" defer></script>
+</head>
+<body><main>
+  <a class="back" href="../">&#8592; Back to PBC</a>
+  <header><img src="../icon-192.png" width="78" height="78" alt="Providence Baptist Church logo"><p class="brand">PROVIDENCE BAPTIST CHURCH</p><h1>Church sign-ups</h1><p class="muted">Find an event, lend a hand, or let us know you're coming.</p></header>
+  <section id="event-list" aria-labelledby="list-heading"><h2 id="list-heading">Open sign-ups</h2><p id="load-status" role="status">Loading current sign-ups…</p><button id="reload" type="button" class="secondary" hidden>Try again</button><div id="events"></div></section>
+  <section id="signup" class="card" aria-labelledby="event-title" hidden>
+    <button id="all-events" type="button" class="text-button">&#8592; All sign-ups</button>
+    <h2 id="event-title" tabindex="-1"></h2><p id="event-when" class="meta"></p><p id="event-where" class="meta"></p><p id="event-details" class="prewrap"></p><p id="event-deadline" class="small"></p><p id="event-contact" class="small prewrap"></p>
+    <form id="signup-form"><fieldset id="signup-fields"><legend>Your sign-up</legend>
+      <label for="name">Your name <span class="required">(required)</span></label><input id="name" name="name" autocomplete="name" maxlength="100" required>
+      <label for="contact">Phone or email <span class="required">(required)</span></label><input id="contact" name="contact" autocomplete="off" maxlength="160" required><p class="hint">So the church can contact you about this sign-up.</p>
+      <div id="number-field" hidden><label id="number-label" for="number"></label><input id="number" name="number" type="number" min="1" max="1000" step="1" inputmode="numeric"></div>
+      <div id="item-field" hidden><label id="item-label" for="item"></label><input id="item" name="item" maxlength="300"></div>
+      <label for="notes">Notes <span class="required">(optional)</span></label><textarea id="notes" name="notes" rows="3" maxlength="1000"></textarea>
+      <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+    </fieldset><p class="small">Your contact information and responses are shared with church organizers, not displayed on this page.</p><button id="submit" type="submit" class="primary">Sign me up</button></form>
+    <div id="form-status" role="status" aria-live="polite"></div><button id="back-after-success" class="secondary" type="button" hidden>View other sign-ups</button>
+  </section>
+  <footer class="small">Providence Baptist Church · Oakman, Alabama</footer>
+</main></body></html>

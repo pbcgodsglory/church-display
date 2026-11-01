@@ -6,7 +6,7 @@ const sheet={getName:()=> 'Manual Entry',getRange:(row,col)=>{
  return {setDataValidation:rule=>{rules[row-7]=rule;writes.push(['rule',row]);},setValue:value=>{values[row-7]=value;writes.push(['value',row,value]);}};
 }};
 const ctx={SpreadsheetApp:{DataValidationCriteria:{CHECKBOX:'CHECKBOX'},newDataValidation:()=>({requireCheckbox(){return this},setAllowInvalid(){return this},build(){return checkbox}})},hubHandleEdit_:()=>{}};
-vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/Code.gs','utf8'),ctx);
+vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/Signups.gs','utf8'),ctx);vm.runInContext(fs.readFileSync(__dirname+'/Code.gs','utf8'),ctx);
 const event={range:{getSheet:()=>sheet,getNumRows:()=>1,getNumColumns:()=>1,getRow:()=>9,getColumn:()=>2,getValue:()=>values[2]}};
 ctx.saveManualRequest_=()=>{submissions++;};
 values=[true,'',false];rules=[checkbox,null,checkbox];writes=[];ctx.repairManualCheckboxes_(event);
