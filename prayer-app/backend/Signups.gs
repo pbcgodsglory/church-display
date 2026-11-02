@@ -63,7 +63,7 @@ function signupApi_(params) {
 function signupFail_(message){const error=Error(message);error.signupMessage=true;throw error;}
 function signupOptionalText_(v,max,label){return v===''||v===undefined||v===null?'':validatedText_(v,max,label);}
 function signupValidated_(p,event) {
-  const value={name:validatedText_(p.name,100,'Your name'),contact:validatedText_(p.contact,160,'Phone or email'),notes:signupOptionalText_(p.notes,1000,'Notes'),number:'',item:'',partner:'',selections:[]};
+  const value={name:validatedText_(p.name,100,'Your name'),contact:signupOptionalText_(typeof p.contact==='string'?p.contact.trim():p.contact,160,'Phone or email'),notes:signupOptionalText_(p.notes,1000,'Notes'),number:'',item:'',partner:'',selections:[]};
   if(event.type==='General registration') {
     if(event.numberLabel){value.number=Number(p.number);if(!/^\d{1,4}$/.test(String(p.number||''))||value.number<1||value.number>1000)signupFail_('Enter a whole number from 1 to 1000.');}
     if(event.itemLabel)value.item=signupOptionalText_(p.item,300,event.itemLabel);

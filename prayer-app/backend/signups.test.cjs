@@ -20,6 +20,11 @@ assert.equal(ctx.signupPublicEvents_([event(),event()],now).length,0);
 assert.equal(ctx.signupPublicEvents_([event({6:'bad date'})],now).length,0);
 assert(!JSON.stringify(ctx.signupPublicEvents_([event()],now)).includes('PRIVATE'));
 eventRows.push(event());const payload={signupId:sid,eventId:id,name:'=TEST NAME',contact:'test@example.invalid',number:'2',item:'+Dish',notes:'@Note',website:''};
+for(const type of ['General registration','Items needed','Volunteer jobs','Fishing tournament']) {
+ const publicEvent={type,numberLabel:'Number attending',itemLabel:'Dish',options:[{id:oid,label:'Desserts',remaining:3}]};
+ for(const contact of ['',undefined,null,'   '])assert.equal(ctx.signupValidated_({...payload,contact,partner:'Partner',selections:[{id:oid,quantity:1}]},publicEvent).contact,'',type+' allows no contact');
+ assert.throws(()=>ctx.signupValidated_({...payload,contact:'x'.repeat(161),partner:'Partner',selections:[{id:oid,quantity:1}]},publicEvent));
+}
 ctx.submitEventSignup(payload);assert.equal(rows[0][4],"'=TEST NAME");assert.equal(rows[0][7],"'+Dish");assert.equal(rows[0][8],"'@Note");ctx.submitEventSignup(payload);assert.equal(rows.length,1);
 assert.deepEqual(ctx.signupApi_({signupApi:'receipt',signupId:sid}),{ok:true,received:true});
 assert.throws(()=>ctx.submitEventSignup({...payload,signupId:oid,number:'1.5'}));

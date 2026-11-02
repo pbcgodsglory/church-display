@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#526eff"><meta name="description" content="Sign up for events and volunteer opportunities at Providence Baptist Church.">
   <title>Church Sign-ups | Providence Baptist Church</title>
   <link rel="icon" href="../icon-192.png"><link rel="stylesheet" href="./styles.css">
-  <script src="./transport.js" defer></script><script src="./app.js" defer></script>
+  <script src="./transport.js" defer></script><script src="./app.js?v=optional-contact-1" defer></script>
 </head>
 <body><main>
   <a class="back" href="../">&#8592; Back to PBC</a>
@@ -16,7 +16,7 @@
     <h2 id="event-title" tabindex="-1"></h2><p id="event-when" class="meta"></p><p id="event-where" class="meta"></p><p id="event-details" class="prewrap"></p><p id="event-deadline" class="small"></p><p id="event-contact" class="small prewrap"></p>
     <form id="signup-form"><fieldset id="signup-fields"><legend>Your sign-up</legend>
       <label for="name">Your name <span class="required">(required)</span></label><input id="name" name="name" autocomplete="name" maxlength="100" required>
-      <label for="contact">Phone or email <span class="required">(required)</span></label><input id="contact" name="contact" autocomplete="off" maxlength="160" required><p class="hint">So the church can contact you about this sign-up.</p>
+      <label for="contact">Phone or email <span class="required">(optional)</span></label><input id="contact" name="contact" autocomplete="off" maxlength="160"><p class="hint">Add it if you’d like the church to contact you about this sign-up.</p>
       <div id="partner-field" hidden><label for="partner">Partner’s name <span class="required">(required)</span></label><input id="partner" name="partner" maxlength="100"><p class="hint">Your boat number is assigned when your registration is received, in first-come order.</p></div>
       <section id="choices-field" hidden><h3 id="choices-heading"></h3><p id="choices-hint" class="hint"></p><div id="choices"></div><button id="refresh-choices" class="secondary" type="button">Refresh availability</button></section>
       <div id="number-field" hidden><label id="number-label" for="number"></label><input id="number" name="number" type="number" min="1" max="1000" step="1" inputmode="numeric"></div>

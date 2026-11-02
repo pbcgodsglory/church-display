@@ -67,7 +67,7 @@
     event.preventDefault();if(busy||!current||!$('signup-form').reportValidity())return;
     if(!pending){
       pending={signupId:crypto.randomUUID(),eventId:current.id,name:$('name').value.trim(),contact:$('contact').value.trim(),number:$('number').value,item:$('item').value.trim(),notes:$('notes').value.trim(),partner:$('partner').value.trim(),selections:Array.from($('choices').querySelectorAll('input')).filter(input=>!input.disabled).map(input=>({id:input.dataset.option,quantity:input.type==='checkbox'?(input.checked?1:0):Number(input.value)})).filter(s=>s.quantity>0),website:$('website').value};
-      if(!pending.name||!pending.contact){pending=null;status('Please enter your name and phone or email.','error');return;}
+      if(!pending.name){pending=null;status('Please enter your name.','error');return;}
     }
     if(['Items needed','Volunteer jobs'].includes(current.type)&&!pending.selections.length){pending=null;status('Choose at least one available item or job.','error');return;}
     busy=true;$('signup-fields').disabled=true;$('submit').disabled=true;$('all-events').disabled=true;status('Sending your sign-up…');

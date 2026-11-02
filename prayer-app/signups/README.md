@@ -9,6 +9,8 @@ The prayer-request workbook is separate. Signups.gs pins all public sign-up read
 - **Event Signups**: private responses. Filter Event for one event. Includes partner, boat number, Payment status, Amount paid, and Payment date. Payments are recorded manually, not processed online.
 - **Sign Up Help**: operating instructions.
 
+Phone or email is optional for every sign-up type; names remain required.
+
 Types: General registration (existing optional number/text labels), Items needed (multiple items and quantities), Volunteer jobs (one opening per chosen job per response), Fishing tournament (required partner, sequential boats).
 
 The server rechecks open/deadline status and remaining capacity under a script lock before appending a single response. Cancelled/Test responses release item/job quantities. Boat numbers start at 1 per event and never reuse cancelled numbers. Retry UUIDs prevent duplicate writes and retain the original boat. A receipt exposes only acceptance, safe validation errors, and the UUID owner's boat number. Names, contacts, partners, notes, payment data and internal selection JSON are never public.
