@@ -1,11 +1,16 @@
 // Reusable sign-ups. Public reads contain event descriptions, availability and UUID receipts only.
+const SIGNUP_SPREADSHEET_ID_ = 'REPLACE_WITH_PRIVATE_SIGNUP_SPREADSHEET_ID';
+function signupSpreadsheet_() {
+  const active=SpreadsheetApp.getActiveSpreadsheet();
+  return active&&active.getId()===SIGNUP_SPREADSHEET_ID_?active:SpreadsheetApp.openById(SIGNUP_SPREADSHEET_ID_);
+}
 const SIGNUP_EVENT_HEADERS_ = ['Event ID','Event name','Sign-up type','When','Where','Details','Sign up by','Open?','Number label','Item or role label','Questions or contact','Sign-up link','Sign-ups received'];
 const SIGNUP_HEADERS_ = ['Received At','Signup ID','Event ID','Event','Name','Phone or email','Number','Item or role','Notes','Status','Admin notes','Sign-up type','Partner name','Boat number','Selections JSON','Payment status','Amount paid','Payment date'];
 const SIGNUP_OPTION_HEADERS_ = ['Option ID','Event ID','Event','Item or job','Number needed','Shift or details','Reserved','Remaining'];
 const SIGNUP_TYPES_ = ['General registration','Items needed','Volunteer jobs','Fishing tournament'];
 const SIGNUP_ID_PATTERN_ = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 function signupSheet_(name, headers) {
-  const sheet=mustGetSheet_(getChurchSpreadsheet_(),name);
+  const sheet=mustGetSheet_(signupSpreadsheet_(),name);
   if(sheet.getRange(1,1,1,headers.length).getDisplayValues()[0].join('|')!==headers.join('|'))throw Error('The sign-up columns need attention.');
   return sheet;
 }
@@ -101,7 +106,7 @@ function signupOptionFormulas_(sheet,row) {
   sheet.getRange(row,8).setFormula('=IF(OR(A'+row+'="",E'+row+'=""),"",MAX(0,E'+row+'-G'+row+'))');
 }
 function signupHandleEdit_(e) {
-  if(!e||!e.range||!['Sign Up Events','Sign Up Options'].includes(e.range.getSheet().getName())||e.range.getLastRow()<2)return;
+  if(!e||!e.range||(e.source&&e.source.getId()!==SIGNUP_SPREADSHEET_ID_)||!['Sign Up Events','Sign Up Options'].includes(e.range.getSheet().getName())||e.range.getLastRow()<2)return;
   const sheet=e.range.getSheet(),lock=LockService.getScriptLock();if(!lock.tryLock(5000))return;
   try {
     const first=Math.max(2,e.range.getRow()),last=Math.min(e.range.getLastRow(),sheet.getMaxRows());

@@ -1,14 +1,16 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const id='bd691d9e-763d-42d3-81fc-a645d9986189',sid='d2699ab2-778a-40ce-bd8d-a699544962b7',oid='ab691d9e-763d-42d3-81fc-a645d9986189';
-const tables={},cache=new Map();let held=false,released=0;
+const tables={},cache=new Map();let held=false,released=0,opens=0;
+const signupBook={getId:()=> 'test-signup-workbook',getSheetByName:n=>tables[n]};
+let activeBook={getId:()=> 'prayer-workbook',getSheetByName(){throw Error('Must never read signups from prayer workbook')}};
 function sheet(headers,data){return {getLastRow:()=>data.length+1,appendRow:r=>{assert(held,'write is protected by lock');data.push(r)},getRange(row,col,height=1,width=1){return {
  getDisplayValues:()=>row===1?[headers]:data.slice(row-2,row-2+height).map(r=>r.slice(col-1,col-1+width)),
  getValues:()=>data.slice(row-2,row-2+height).map(r=>r.slice(col-1,col-1+width)),getValue:()=>data[row-2]?.[col-1]||'',
  createTextFinder(value){return {matchEntireCell(){return this},findNext(){const i=data.findIndex(r=>r[col-1]===value);return i<0?null:{getRow:()=>i+2}}}}
 };}};}
-const ctx={Date,Set,LockService:{getScriptLock:()=>({waitLock(){assert(!held);held=true},releaseLock(){held=false;released++}})},SpreadsheetApp:{flush(){}},CacheService:{getScriptCache:()=>({get:k=>cache.get(k),put:(k,v)=>cache.set(k,v),remove:k=>cache.delete(k)})},getChurchSpreadsheet_:()=>({}),mustGetSheet_:(s,n)=>tables[n],
+const ctx={Date,Set,LockService:{getScriptLock:()=>({waitLock(){assert(!held);held=true},releaseLock(){held=false;released++}})},SpreadsheetApp:{flush(){},getActiveSpreadsheet:()=>activeBook,openById:id=>{assert.equal(id,signupBook.getId());opens++;return signupBook}},CacheService:{getScriptCache:()=>({get:k=>cache.get(k),put:(k,v)=>cache.set(k,v),remove:k=>cache.delete(k)})},getChurchSpreadsheet_:()=>{throw Error('Prayer routing must be independent')},mustGetSheet_:(s,n)=>s.getSheetByName(n),
  validatedText_:(v,n,label)=>{if(typeof v!=='string'||!v.trim()||v.trim().length>n)throw Error(label);return v.trim()},sheetSafe_:v=>/^[=+\-@]/.test(v)?"'"+v:v,ContentService:{MimeType:{JSON:'json'},createTextOutput:s=>({setMimeType:()=>JSON.parse(s)})}};
-vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/Signups.gs','utf8'),ctx);
+vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/Signups.gs','utf8').replace('REPLACE_WITH_PRIVATE_SIGNUP_SPREADSHEET_ID','test-signup-workbook'),ctx);
 const headers=vm.runInContext('[SIGNUP_EVENT_HEADERS_,SIGNUP_HEADERS_,SIGNUP_OPTION_HEADERS_]',ctx);
 const eventRows=[],rows=[],options=[];['Sign Up Events','Event Signups','Sign Up Options'].forEach((n,i)=>tables[n]=sheet(headers[i],[eventRows,rows,options][i]));
 const event=(changes={})=>Object.assign([id,'Church meal','General registration','Sunday','Hall','Bring a dish','',true,'Number attending','Dish','Office','PRIVATE LINK','PRIVATE COUNT'],changes);
@@ -38,4 +40,6 @@ assert.equal(ctx.submitEventSignup(fishing).boatNumber,1,'retry returns original
 const receipt=ctx.signupApi_({signupApi:'receipt',signupId:fishing.signupId});assert.deepEqual(receipt,{ok:true,received:true,boatNumber:1});
 assert.throws(()=>ctx.submitEventSignup({...fishing,signupId:'32699ab2-778a-40ce-bd8d-a699544962b7',partner:''}));
 eventRows[0][7]=false;assert.throws(()=>ctx.submitEventSignup({...fishing,signupId:'32699ab2-778a-40ce-bd8d-a699544962b7'}),/closed/);
-assert(!held);assert(released>=10);console.log('PASS: four types, private fields, capacity checks, cancellations, validation, boat sequence, idempotence, safe receipts and locks.');
+const beforeOpen=opens;activeBook=signupBook;ctx.signupEvents_();assert.equal(opens,beforeOpen,'bound signup editor uses its own workbook without cross-file auth');
+ctx.signupHandleEdit_({source:{getId:()=> 'prayer-workbook'},range:{getSheet(){throw Error('Old workbook edits must be ignored')}}});
+assert(opens>0,'web app opens the separate workbook');assert(!held);assert(released>=10);console.log('PASS: four types, private fields, capacity checks, cancellations, validation, boat sequence, idempotence, safe receipts and locks.');

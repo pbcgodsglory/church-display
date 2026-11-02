@@ -1,6 +1,8 @@
 # Reusable church sign-ups
 
-Manage the private Prayer Request Tracker workbook:
+Manage the private **PBC Event & Volunteer Sign-ups** workbook:
+
+The prayer-request workbook is separate. Signups.gs pins all public sign-up reads and writes to SIGNUP_SPREADSHEET_ID_, even when the web app runs from the prayer project. A copy of the existing bound script provides onEdit IDs, links, and formulas inside this new workbook; it needs no public deployment. Keep its Signups.gs in sync with the web app source. Configure SIGNUP_SPREADSHEET_ID_ with the private workbook ID in both private Apps Script projects before saving/deploying; the public repository intentionally contains a placeholder rather than the private workbook ID or link.
 
 - **Sign Up Events**: copy a closed template, use a unique event name, choose **Sign-up type** in column C, enter date/location/details, then check **Open?**. Blank type defaults to General registration for compatibility.
 - **Sign Up Options**: choose an event in column C, enter each item/job, required whole-number quantity, and optional shift/details. IDs, Reserved, and Remaining fill automatically on Sheets UI edits. Copying an event does not copy options: copy/reassign its option rows too.
