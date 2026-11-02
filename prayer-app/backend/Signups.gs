@@ -1,4 +1,4 @@
-// Reusable sign-ups. Public reads contain event descriptions, availability and UUID receipts only.
+// Reusable sign-ups. Tournament TV reads require separate, explicit publishing switches.
 const SIGNUP_SPREADSHEET_ID_ = 'REPLACE_WITH_PRIVATE_SIGNUP_SPREADSHEET_ID';
 function signupSpreadsheet_() {
   const active=SpreadsheetApp.getActiveSpreadsheet();
@@ -56,6 +56,7 @@ function signupApi_(params) {
   let result;try {
     if(params.signupApi==='events')result={ok:true,events:signupEvents_()};
     else if(params.signupApi==='receipt')result=Object.assign({ok:true},signupReceipt_(params.signupId));
+    else if(params.signupApi==='tournament')result=tournamentPublic_(params.event,params.mode);
     else result={ok:false};
   }catch(error){result={ok:false};}
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
@@ -90,11 +91,14 @@ function submitEventSignup(payload) {
     const receipt=signupReceipt_(payload.signupId);if(receipt.received)return Object.assign({success:true},receipt);
     const event=signupEvents_().find(e=>e.id===payload.eventId);if(!event)signupFail_('This sign-up is closed. Please contact the church.');
     const value=signupValidated_(payload,event),sheet=signupSheet_('Event Signups',SIGNUP_HEADERS_);
+    if(event.type==='Fishing tournament'&&typeof tournamentReconcile_==='function')tournamentReconcile_();
     // Never reuse a boat number, even for cancelled registrations. The lock serializes simultaneous submissions.
     const boat=event.type==='Fishing tournament'?signupRows_('Event Signups',SIGNUP_HEADERS_).filter(r=>r[2]===event.id).reduce((max,r)=>Math.max(max,Number(r[13])||0),0)+1:'';
     sheet.appendRow([new Date(),payload.signupId,event.id,sheetSafe_(event.title),sheetSafe_(value.name),sheetSafe_(value.contact),value.number,
       sheetSafe_(value.item),sheetSafe_(value.notes),'Received','',event.type,sheetSafe_(value.partner),boat,JSON.stringify(value.selections),boat?'Unpaid':'','','']);
     SpreadsheetApp.flush();CacheService.getScriptCache().remove('signup-error:'+payload.signupId);
+    // The accepted response is authoritative. A temporary mirror failure is retried by the minute trigger.
+    if(boat&&typeof tournamentReconcile_==='function'){try{tournamentReconcile_();}catch(error){console.error('Tournament mirror needs a retry');}}
     return boat?{success:true,boatNumber:boat}:{success:true};
   }catch(error){
     CacheService.getScriptCache().put('signup-error:'+payload.signupId,error.signupMessage?error.message:'Please check your entries or contact the church.',21600);throw error;

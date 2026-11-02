@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071b27">
+  <title>PBC Fishing Tournament</title>
+  <link rel="stylesheet" href="./styles.css?v=1">
+  <script src="./app.js?v=1" defer></script>
+</head>
+<body>
+  <div class="screen">
+    <header>
+      <div><p class="eyebrow">Providence Baptist Church <span id="demo" hidden>Sample preview</span></p><h1 id="title">Fishing Tournament</h1><p id="event-meta" class="event-meta"></p></div>
+      <div class="heading-right"><p id="mode-label" class="mode-label">Boat assignments</p><p id="summary" class="summary"></p></div>
+    </header>
+    <main id="main">
+      <section id="empty" class="empty" aria-live="polite"><div class="empty-mark" aria-hidden="true">↗</div><h2 id="empty-title">Loading tournament…</h2><p id="empty-text">Please wait while the display updates.</p></section>
+      <section id="pre" class="pre" hidden aria-label="Boat assignments">
+        <div class="list-heading"><span>Boat</span><span>Angler &amp; partner</span></div>
+        <div id="roster-window" class="roster-window"><div id="roster-track"></div></div>
+      </section>
+      <section id="results" class="results" hidden aria-label="Tournament results">
+        <div class="leaderboard"><div class="section-heading"><h2>Top 10 places</h2><span>Final weight · lb</span></div><div class="results-heading"><span>Place</span><span>Team</span><span>Weight</span></div><div id="standings" class="standings"></div></div>
+        <aside class="big-fish"><p class="eyebrow">Big fish</p><h2 id="big-fish-weight">—<small>lb</small></h2><div id="big-fish-winners"></div><p class="big-fish-foot">Weight ties break by larger big fish.<br>Exact ties share a place.</p></aside>
+      </section>
+    </main>
+    <footer><p id="message">Welcome, anglers.</p><p id="freshness" role="status">Connecting…</p></footer>
+  </div>
+  <nav class="controls" aria-label="Display controls"><button id="pause" type="button">Pause scrolling</button><button id="fullscreen" type="button">Full screen</button></nav>
+</body>
+</html>
