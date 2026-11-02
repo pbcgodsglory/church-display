@@ -29,7 +29,7 @@
   function render(data){
     if(!data.published){lastGood=null;$('title').textContent='Fishing Tournament';$('summary').textContent='';$('event-meta').textContent='';$('message').textContent='';empty('The display is not live yet',mode==='pre'?'Boat assignments will appear here when the organizer publishes them.':'Results will appear here when the organizer publishes them.');return;}
     lastGood=data;$('title').textContent=data.title;$('event-meta').textContent=[data.when,data.where].filter(Boolean).join(' · ');document.title=data.title+' — '+(mode==='pre'?'Boat assignments':'Results');
-    $('summary').textContent=mode==='pre'?data.teamCount+' registered teams':data.label+' · '+data.weighedCount+' of '+data.teamCount+' teams weighed';
+    $('summary').textContent=mode==='pre'?'Teams registered: '+data.teamCount:data.label+' · '+data.weighedCount+' of '+data.teamCount+' teams weighed';
     $('message').textContent=data.message||(mode==='pre'?'Find your team. Know your boat number.':'Thank you to every team who fished with us.');
     const rows=mode==='pre'?data.teams:data.standings;
     if(!rows.length){empty(mode==='pre'?'The roster is ready':'Awaiting weigh-in',mode==='pre'?'Registered teams and their boat numbers will appear here.':'Results appear after a team’s final weight is entered and marked weighed.');return;}
