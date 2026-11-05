@@ -23,7 +23,7 @@ Apps Script also needs `Announcements.gs` in the existing project. Keep its func
 
 ## Prayer and change review
 
-Manual Entry checkboxes B7:B9 are repaired on edits to that tab. Cleared or invalid cells return unchecked; valid existing checkmarks remain as selected. Clearing Submit never creates a request, and repair never grants bulletin consent. Removing validation through menus alone is repaired on the next cell edit; this is automatic restoration, not a restriction on the spreadsheet owner.
+Manual Entry is a batch list: enter one request per row in A6:F30, up to 25 requests, then check B3 (Submit all requests?) once. Each used row requires Requested By, Request For (Myself or Someone else), Prayer For for someone else, and either Prayer Request text or Unspoken. OK for Bulletin is separate per row and defaults unchecked. Blank rows are ignored. The entire batch is validated before any rows are written; errors identify the sheet row and leave all drafts in place. Successful saves add one Requests row per entry, share a submission ID for the batch, and clear the draft fields while retaining validation. Manual Entry submit B3 and checkboxes E6:F30 are repaired on edits to that tab. Cleared or invalid cells return unchecked; valid existing checkmarks remain as selected. Clearing Submit never creates a request, and repair never grants bulletin consent. Removing validation through menus alone is repaired on the next cell edit; this is automatic restoration, not a restriction on the spreadsheet owner.
 
 1. New prayers still arrive in Requests with Review Status New. At the user’s direction, OK for Bulletin = Yes automatically includes active prayers online without a separate approval step. Private requests never appear.
 2. Visitor changes enter Change Requests with status Pending. Review the person, action, requester and Details before approving. For an Update, Details becomes both Prayer Request (column F) and Bulletin Wording (column K); edit it first if needed. Unspoken (column G) becomes Yes only when the approved wording is Unspoken, otherwise No.
@@ -32,6 +32,8 @@ Manual Entry checkboxes B7:B9 are repaired on edits to that tab. Cleared or inva
 5. Completed/archive behavior remains the existing automation. Restoring an archived prayer resets it to New; it returns online automatically if OK for Bulletin is Yes.
 
 Only single-cell UI approvals trigger processing; connector/API edits and bulk pasted approval ranges do not. This deliberately avoids accidentally approving a batch. Public updates do not modify the list until reviewed. Multiple prayers in one submission are distinguished by a fingerprint of the original row; identical duplicate rows require manual review.
+
+Manual-only changes use the bound sheet's saved onEdit code immediately; they do not require changing the deployed public web app. Run `node prayer-app/backend/manual-batch.test.cjs` and `node prayer-app/backend/checkboxes.test.cjs` for batch validation, failure preservation, duplicate-event handling and checkbox repair.
 
 ## Deployment and rollback
 

@@ -17,7 +17,7 @@
  *    Requests, resets review status to New, and clears its archive date.
  *  - A daily trigger permanently deletes archive rows 7 full days after
  *    they were archived. Those deleted entries cannot be restored here.
- *  - Manual Entry B9: checking TRUE saves one new request to Requests.
+ *  - Manual Entry B3: checking TRUE saves up to 25 request rows together.
  */
 
 const PRAYER_SPREADSHEET_ID = '1O6KRr18tJTpkfcnCKiASGZohkHs2xy5_Dcm_Y4-aW7s';
@@ -25,6 +25,10 @@ const PRAYER_SHEET_NAME = 'Requests';
 const ARCHIVED_SHEET_NAME = 'Archived Requests';
 const MANUAL_SHEET_NAME = 'Manual Entry';
 const ARCHIVE_AFTER_DAYS = 7;
+const MANUAL_BATCH_HEADERS = ['Requested By', 'Prayer For', 'Request For',
+  'Prayer Request', 'Unspoken?', 'OK for Bulletin?'];
+const MANUAL_BATCH_FIRST_ROW = 6;
+const MANUAL_BATCH_LIMIT = 25;
 const PRAYER_HEADERS = [
   'Submitted At', 'Submission ID', 'Submitted By', 'Prayer For',
   'For Whom', 'Prayer Request', 'Unspoken', 'OK for Bulletin',
@@ -122,7 +126,7 @@ function onEdit(e) {
       range.getValue() === true) operation = 'archive';
   if (name === ARCHIVED_SHEET_NAME && column === COMPLETED_COLUMN &&
       range.getValue() === false) operation = 'restore';
-  if (name === MANUAL_SHEET_NAME && row === 9 && column === 2 &&
+  if (name === MANUAL_SHEET_NAME && row === 3 && column === 2 &&
       range.getValue() === true) operation = 'manual';
   if (!operation) return;
 
@@ -141,7 +145,10 @@ function onEdit(e) {
     else saveManualRequest_(spreadsheet);
   } catch (error) {
     // Leave the item visible for manual correction instead of silently losing it.
-    if (operation === 'manual') sheet.getRange('B9').setValue(false);
+    if (operation === 'manual') {
+      sheet.getRange('B3').setValue(false);
+      sheet.getRange('A4').setValue('Not submitted: ' + (error.message || String(error)));
+    }
     else if (operation === 'archive') sheet.getRange(row, COMPLETED_COLUMN).setValue(false);
     else if (operation === 'restore') sheet.getRange(row, COMPLETED_COLUMN).setValue(true);
     SpreadsheetApp.getActiveSpreadsheet().toast(error.message || String(error),
@@ -152,24 +159,29 @@ function onEdit(e) {
   }
 }
 
-/** Restore accidentally cleared Manual Entry controls without changing valid ticks. */
+/** Restore cleared batch checkboxes; clearing a control never grants consent. */
 function repairManualCheckboxes_(e) {
   if (!e || !e.range || e.range.getSheet().getName() !== MANUAL_SHEET_NAME) return;
   const sheet = e.range.getSheet();
-  const controls = sheet.getRange('B7:B9');
-  const values = controls.getValues(), rules = controls.getDataValidations();
+  // Do not touch a legacy form while its layout is being upgraded.
+  if (sheet.getRange('A5').getValue() !== MANUAL_BATCH_HEADERS[0]) return;
   let checkboxRule;
-  for (let i = 0; i < 3; i++) {
-    const rule = rules[i][0], value = values[i][0];
-    const validRule = rule && rule.getCriteriaType() === SpreadsheetApp.DataValidationCriteria.CHECKBOX;
-    if (validRule && typeof value === 'boolean') continue;
-    if (!checkboxRule) checkboxRule = SpreadsheetApp.newDataValidation()
-      .requireCheckbox().setAllowInvalid(false).build();
-    const cell = sheet.getRange(i + 7,2);
-    cell.setDataValidation(checkboxRule);
-    // A cleared/invalid cell returns unchecked. Never infer consent or submit it.
-    cell.setValue(value === true);
-  }
+  [[3, 2, 1, 1], [MANUAL_BATCH_FIRST_ROW, 5, MANUAL_BATCH_LIMIT, 2]].forEach(function(block) {
+    const range = sheet.getRange.apply(sheet, block);
+    const values = range.getValues(), rules = range.getDataValidations();
+    for (let r = 0; r < block[2]; r++) {
+      for (let c = 0; c < block[3]; c++) {
+        const rule = rules[r][c], value = values[r][c];
+        const valid = rule && rule.getCriteriaType() === SpreadsheetApp.DataValidationCriteria.CHECKBOX;
+        if (valid && typeof value === 'boolean') continue;
+        if (!checkboxRule) checkboxRule = SpreadsheetApp.newDataValidation()
+          .requireCheckbox().setAllowInvalid(false).build();
+        const cell = sheet.getRange(block[0] + r, block[1] + c);
+        cell.setDataValidation(checkboxRule);
+        cell.setValue(value === true);
+      }
+    }
+  });
 }
 
 function archiveRow_(spreadsheet, sourceRow) {
@@ -210,35 +222,53 @@ function restoreRow_(spreadsheet, sourceRow) {
     'Request restored', 6);
 }
 
+/** Validate the entire draft batch before writing any request. */
+function manualBatchRows_(values, now, submissionId) {
+  const entries = [];
+  values.forEach(function(values, index) {
+    const started = values.slice(0, 4).some(function(value) {
+      return String(value == null ? '' : value).trim() !== '';
+    }) || values[4] === true || values[5] === true;
+    if (!started) return;
+    const label = 'Row ' + (MANUAL_BATCH_FIRST_ROW + index) + ': ';
+    const submittedBy = validatedText_(String(values[0] || ''), 100, label + 'Requested By');
+    const forWhom = values[2];
+    if (forWhom !== 'Myself' && forWhom !== 'Someone else') {
+      throw new Error(label + 'choose Myself or Someone else in Request For.');
+    }
+    const prayerFor = forWhom === 'Myself' ? submittedBy
+      : validatedText_(String(values[1] || ''), 120, label + 'Prayer For');
+    const unspoken = values[4] === true;
+    const details = unspoken ? 'Unspoken'
+      : validatedText_(String(values[3] || ''), 2000, label + 'Prayer Request');
+    entries.push(makeRow_(now, submissionId, submittedBy, prayerFor,
+      forWhom, details, unspoken, values[5] === true));
+  });
+  if (!entries.length) throw new Error('Enter at least one request in rows 6–30.');
+  if (entries.length > MANUAL_BATCH_LIMIT) throw new Error('Submit up to 25 requests at a time.');
+  return entries;
+}
+
 function saveManualRequest_(spreadsheet) {
   const form = mustGetSheet_(spreadsheet, MANUAL_SHEET_NAME);
+  // A second queued checkbox event must not submit the same batch again.
+  if (form.getRange('B3').getValue() !== true) return;
+  const actual = form.getRange(5, 1, 1, MANUAL_BATCH_HEADERS.length).getDisplayValues()[0];
+  if (actual.join('|') !== MANUAL_BATCH_HEADERS.join('|')) {
+    throw new Error('The Manual Entry columns have changed. Please restore the batch layout.');
+  }
   const requests = mustGetSheet_(spreadsheet, PRAYER_SHEET_NAME);
   assertHeaders_(requests);
-  const values = form.getRange('B3:B9').getValues().map(function(row) {
-    return row[0];
-  });
-  const submittedBy = validatedText_(String(values[0] || ''), 100, 'Requested By');
-  const forWhom = values[2];
-  if (forWhom !== 'Myself' && forWhom !== 'Someone else') {
-    throw new Error('Please select Myself or Someone else.');
-  }
-  const prayerFor = forWhom === 'Myself' ? submittedBy
-    : validatedText_(String(values[1] || ''), 120, 'Prayer For');
-  const unspoken = values[4] === true;
-  const details = unspoken ? 'Unspoken'
-    : validatedText_(String(values[3] || ''), 2000, 'Prayer Request');
-  const consent = values[5] === true;
-
-  appendRows_(requests, [makeRow_(new Date(), Utilities.getUuid(),
-    submittedBy, prayerFor, forWhom, details, unspoken, consent)]);
-
-  // Clear ONLY after the request has been saved; preserve input validation.
-  form.getRange('B3:B4').clearContent();
-  form.getRange('B5').setValue('Myself');
-  form.getRange('B6').clearContent();
-  form.getRange('B7:B9').setValues([[false], [false], [false]]);
-  spreadsheet.toast('Manual request saved to Requests for review.',
-    'Request added', 6);
+  const entries = manualBatchRows_(form.getRange(MANUAL_BATCH_FIRST_ROW, 1,
+    MANUAL_BATCH_LIMIT, MANUAL_BATCH_HEADERS.length).getValues(), new Date(), Utilities.getUuid());
+  appendRows_(requests, entries);
+  // Clear drafts only after the complete batch has been saved successfully.
+  form.getRange(MANUAL_BATCH_FIRST_ROW, 1, MANUAL_BATCH_LIMIT, 4).clearContent();
+  form.getRange(MANUAL_BATCH_FIRST_ROW, 5, MANUAL_BATCH_LIMIT, 2)
+    .setValues(Array.from({length: MANUAL_BATCH_LIMIT}, function() { return [false, false]; }));
+  form.getRange('B3').setValue(false);
+  form.getRange('A4').setValue(entries.length + ' request(s) saved. Ready for your next batch.');
+  spreadsheet.toast(entries.length + ' manual request(s) saved to Requests.', 'Requests added', 6);
 }
 
 /**
