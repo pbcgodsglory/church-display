@@ -18,13 +18,14 @@ function tournamentWeight_(v){
   if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>999.99||Math.abs(v*100-Math.round(v*100))>0.000001)return null;
   return Math.round(v*100);
 }
+function tournamentUnpaidWeighIn_(r){return r[6]===true&&(!r[8]||r[8]==='Unpaid')&&!['Cancelled','Test'].includes(r[13]);}
 function tournamentStandings_(rows,eventId){
   const teams=rows.filter(r=>r[15]===eventId&&SIGNUP_ID_PATTERN_.test(String(r[14]))&&Number.isInteger(r[1])&&r[1]>0&&String(r[2]).trim()&&String(r[3]).trim()&&!['Cancelled','Test'].includes(r[13]));
   const seenIds=new Set(),seenBoats=new Set();
   // Ambiguous identifiers must be corrected privately before publishing.
   teams.forEach(r=>{if(seenIds.has(r[14])||seenBoats.has(r[1]))throw Error('Duplicate tournament entry or boat');seenIds.add(r[14]);seenBoats.add(r[1]);});
   const roster=teams.map(r=>({boatNumber:r[1],name:String(r[2]),partner:String(r[3])})).sort((a,b)=>a.boatNumber-b.boatNumber);
-  const weighed=teams.filter(r=>r[6]===true&&r[7]!==true&&tournamentWeight_(r[4])!==null&&(r[5]===''||tournamentWeight_(r[5])!==null))
+  const weighed=teams.filter(r=>r[6]===true&&!tournamentUnpaidWeighIn_(r)&&r[7]!==true&&tournamentWeight_(r[4])!==null&&(r[5]===''||tournamentWeight_(r[5])!==null))
     .map(r=>({entryId:r[14],boatNumber:r[1],name:String(r[2]),partner:String(r[3]),weight:tournamentWeight_(r[4]),bigFish:r[5]===''?0:tournamentWeight_(r[5])}))
     .sort((a,b)=>b.weight-a.weight||b.bigFish-a.bigFish||a.boatNumber-b.boatNumber);
   let place=0;
@@ -101,6 +102,7 @@ function tournamentReconcile_(){
   rows.forEach((r,index)=>{if(!r[14])return;
     const event=events.find(e=>e[0]===r[15]);
     let check=!event?'Event ID needs attention.':!String(r[2]).trim()||!String(r[3]).trim()?'Both names are required.':!Number.isInteger(r[1])||r[1]<1?'Boat number needs attention.':r[6]===true&&(tournamentWeight_(r[4])===null||(r[5]!==''&&tournamentWeight_(r[5])===null))?'Enter weights as nonnegative decimal pounds, at most 2 decimals.':'Ready';
+    if(check==='Ready'&&tournamentUnpaidWeighIn_(r))check='UNPAID - held out of results. Mark Paid after payment.';
     if(event&&r[0]!==event[1])teams.getRange(index+2,1).setValue(sheetSafe_(String(event[1])));
     teams.getRange(index+2,19,1,2).setValues([[check,places.get(r[14])||'']]);
   });

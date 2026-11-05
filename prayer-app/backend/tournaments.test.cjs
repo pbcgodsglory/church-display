@@ -32,6 +32,21 @@ let pre=ctx.tournamentPublic_(eventId,'pre');assert.equal(pre.teams.length,2);as
 assert(!JSON.stringify(pre).includes('PRIVATE'));assert(!JSON.stringify(pre).includes('Unpaid'));assert(!JSON.stringify(pre).includes('entryId'));
 assert.equal(JSON.stringify(ctx.tournamentPublic_(eventId,'results')),JSON.stringify({ok:true,published:false}),'two publishing switches are independent');
 setup[2]=true;const a=tables.Teams.data[1],b=tables.Teams.data[2];a[4]=12.33;a[5]=3.44;a[6]=true;b[4]=12.33;b[5]=3.45;b[6]=true;
+ctx.tournamentRefresh_();
+let heldResult=ctx.tournamentPublic_(eventId,'results');
+assert.equal(heldResult.standings.length,0);assert.equal(heldResult.bigFishWinners.length,0);assert.equal(heldResult.weighedCount,0);
+assert.equal(ctx.tournamentPublic_(eventId,'pre').teams.length,2,'unpaid weighed teams keep their boat assignments on the pre-tournament list');
+assert.match(a[18],/UNPAID/);assert.equal(a[19],'');assert.match(b[18],/UNPAID/);
+a[8]='Paid';ctx.tournamentEdit_({source:tournamentBook,range:tables.Teams.getRange(2,9)});
+heldResult=ctx.tournamentPublic_(eventId,'results');assert.equal(heldResult.standings.length,1);assert.equal(heldResult.standings[0].boatNumber,1);assert.equal(heldResult.standings[0].place,1);assert.equal(heldResult.bigFishWinners[0].boatNumber,1);
+assert.equal(a[18],'Ready');assert.equal(a[19],1);assert.equal(tables['Event Signups'].data[1][15],'Paid');
+b[6]=false;ctx.tournamentRefresh_();assert.equal(b[18],'Ready','unpaid entries are flagged only after weighing in');
+b[6]=true;b[8]='';ctx.tournamentRefresh_();assert.match(b[18],/UNPAID/,'blank status is treated as unpaid');
+for(const status of ['Partial','Waived','Refunded']){b[8]=status;assert.equal(ctx.tournamentPublic_(eventId,'results').standings.length,2,'other payment statuses retain their behavior');}
+b[8]='Paid';ctx.tournamentEdit_({source:tournamentBook,range:tables.Teams.getRange(3,9)});
+assert.equal(b[18],'Ready');assert.equal(b[19],1);assert.equal(a[19],2,'places recalculate when payment clears');
+assert.equal(a[4],12.33);assert.equal(b[4],12.33);assert.equal(a[1],1);assert.equal(b[1],2,'payment changes preserve weights and boats');
+assert(!/PRIVATE|Unpaid|payment|entryId/.test(JSON.stringify(ctx.tournamentPublic_(eventId,'results'))),'public results do not disclose payment or private fields');
 let result=ctx.tournamentPublic_(eventId,'results');assert.equal(result.standings[0].boatNumber,2);assert.equal(result.standings[0].place,1);assert.equal(result.standings[1].place,2);assert.equal(result.bigFishWinners[0].boatNumber,2);
 a[5]=3.45;result=ctx.tournamentPublic_(eventId,'results');assert.deepEqual(Array.from(result.standings,t=>t.place),[1,1]);assert.equal(result.bigFishWinners.length,2);
 a[7]=true;assert.equal(ctx.tournamentPublic_(eventId,'results').standings.length,1,'DQ suppresses total and big-fish awards');a[7]=false;

@@ -10,6 +10,8 @@ Enter the final decimal-pound weight after penalties, plus eligible big-fish wei
 
 Use Teams for fishing name, partner, registration status and payment edits; the edit trigger mirrors those fields back to the accepted sign-up record. Payment fields record status, amount and date without collecting payment. Contact is optional. Keep workbook headers and generated columns intact.
 
+Once Weighed? is checked, an Unpaid (or blank) payment status holds the team out of the results and big-fish awards and flags Entry check. Marking Paid restores eligibility and recalculates places using the saved weights. Unpaid teams remain on the pre-tournament boat list. Partial, Waived and Refunded retain their existing behavior.
+
 The TV pages use `?event=<public event UUID>&mode=pre` and `?event=<public event UUID>&mode=results`. Links are supplied in Tournament Setup. Each has a separate checkbox; online registration's Open? checkbox does not control the TV. Pre-tournament scrolls an overflowing boat list continuously, with pause and full-screen controls. Reduced-motion users see timed pages. Results remain on one static screen. Both refresh approximately every fifteen seconds, preserve the last successful view on a connection failure, and clearly label it stale. A successful unpublished response clears the display. Contact, payment, private notes, internal identifiers and unrelated event data are never included in the TV response.
 
 Preview layouts with `?demo=1&mode=pre` and `?demo=1&mode=results`; these are visibly marked sample data and do not write registrations.
