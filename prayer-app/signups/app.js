@@ -6,9 +6,15 @@
   function text(id,value){$(id).textContent=value;$(id).hidden=!value;}
   function deadline(value){return value?'Sign up by '+new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Chicago'}).format(new Date(value))+' Central time':'';}
   function status(message,type){$('form-status').textContent=message;$('form-status').className=type||'';}
+  const dollars=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value);
+  function paymentFor(event){
+    const payment=event?.payment;if(!payment||!Number.isFinite(payment.amount)||payment.amount<=0)return null;
+    try{const url=new URL(payment.url);if(url.origin!=='https://give.tithe.ly'||url.pathname!=='/'||url.username||url.password||url.hash||url.searchParams.getAll('amount').length!==1||url.searchParams.get('amount')!==String(Math.round(payment.amount*100))||url.searchParams.get('frequency')!=='one-time')return null;return payment;}catch(error){return null;}
+  }
+  function clearPayment(){ $('payment-step').hidden=true;$('pay-link').removeAttribute('href'); }
   function showList(){
     if(busy)return;
-    current=null;pending=null;$('signup').hidden=true;$('event-list').hidden=false;
+    current=null;pending=null;clearPayment();$('signup').hidden=true;$('event-list').hidden=false;
     history.replaceState(null,'',location.pathname);$('list-heading').setAttribute('tabindex','-1');$('list-heading').focus();
   }
   function renderChoices(saved){
@@ -27,9 +33,10 @@
   function choose(id){
     current=events.find(event=>event.id===id);
     if(!current)return;
-    pending=null;$('signup-form').reset();$('signup-form').hidden=false;$('signup-fields').disabled=false;$('submit').disabled=false;$('submit').textContent='Sign me up';$('back-after-success').hidden=true;status('');
+    pending=null;clearPayment();$('signup-form').reset();$('signup-form').hidden=false;$('signup-fields').disabled=false;$('submit').disabled=false;$('submit').textContent='Sign me up';$('back-after-success').hidden=true;status('');
     text('event-title',current.title);text('event-when',current.when);text('event-where',current.where);text('event-details',current.details);text('event-deadline',deadline(current.deadline));text('event-contact',current.contact?'Questions? '+current.contact:'');
     const general=!current.type||current.type==='General registration',fishing=current.type==='Fishing tournament',choices=['Items needed','Volunteer jobs'].includes(current.type);
+    const payment=paymentFor(current);text('event-fee',payment?'Entry fee: '+dollars(payment.amount)+(fishing?' per team':'')+'. Pay through Tithe.ly after signing up.':'');
     $('partner-field').hidden=!fishing;$('partner').required=fishing;$('choices-field').hidden=!choices;
     text('choices-heading',current.type==='Volunteer jobs'?'Choose your jobs':'Choose what you can bring');text('choices-hint',current.type==='Volunteer jobs'?'Select one or more jobs. Each selection reserves one opening.':'Enter a quantity for each item you can bring. You can choose multiple items.');renderChoices();
     $('number-field').hidden=!general||!current.numberLabel;$('number').required=general&&!!current.numberLabel;text('number-label',current.numberLabel?current.numberLabel+' (required)':'');
@@ -72,7 +79,10 @@
     if(['Items needed','Volunteer jobs'].includes(current.type)&&!pending.selections.length){pending=null;status('Choose at least one available item or job.','error');return;}
     busy=true;$('signup-fields').disabled=true;$('submit').disabled=true;$('all-events').disabled=true;status('Sending your sign-up…');
     try{
-      const receipt=await api.submit(pending);status(receipt.boatNumber?"You're registered! Your boat number is "+receipt.boatNumber+". Payment is tracked separately by the organizer.":"You're signed up! Your response has been received by the church.",'success');$('signup-form').hidden=true;$('back-after-success').hidden=false;pending=null;
+      const receipt=await api.submit(pending),payment=paymentFor(current);
+      status(receipt.boatNumber?"You're registered! Your boat number is "+receipt.boatNumber+(payment?'.':'. Payment is tracked separately by the organizer.'):"You're signed up! Your response has been received by the church.",'success');
+      if(payment){$('pay-link').href=payment.url;$('pay-link').textContent='Pay '+dollars(payment.amount)+' through Tithe.ly';$('payment-step').hidden=false;}
+      $('signup-form').hidden=true;$('back-after-success').hidden=false;pending=null;
     }catch(error){status(error.message,'error');$('submit').textContent='Try again';if(error.rejected){pending=null;$('signup-fields').disabled=false;}}
     finally{busy=false;$('submit').disabled=false;$('all-events').disabled=false;}
   });

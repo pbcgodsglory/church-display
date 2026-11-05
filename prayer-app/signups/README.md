@@ -6,10 +6,12 @@ The prayer-request workbook is separate. Signups.gs pins all public sign-up read
 
 - **Sign Up Events**: copy a closed template, use a unique event name, choose **Sign-up type** in column C, enter date/location/details, then check **Open?**. Blank type defaults to General registration for compatibility.
 - **Sign Up Options**: choose an event in column C, enter each item/job, required whole-number quantity, and optional shift/details. IDs, Reserved, and Remaining fill automatically on Sheets UI edits. Copying an event does not copy options: copy/reassign its option rows too.
-- **Event Signups**: private responses. Filter Event for one event. Includes partner, boat number, Payment status, Amount paid, and Payment date. Payments are recorded manually, not processed online.
+- **Event Signups**: private responses. Filter Event for one event. Includes partner, boat number, Payment status, Amount paid, and Payment date. Payment status is confirmed manually by the organizer.
 - **Sign Up Help**: operating instructions.
 
 Phone or email is optional for every sign-up type; names remain required.
+
+Optional event payments: put a Tithe.ly custom one-time giving link in **Sign Up Events N** and the entry fee in dollars in **O** (for example, 50). The link's preset amount must match the fee; create the link in Tithe.ly with the appropriate fund and amount. Only validated `https://give.tithe.ly/` links with matching cent amounts are published. Leave both cells blank for events without a payment step. The fee appears before registration; the payment button appears only after successful signup confirmation, preserving the assigned boat number. Tithe.ly opens in a new tab and may offer optional fee coverage. Use the same registered name when paying so the organizer can match the payment. Opening the link does not mark Paid; verify the transaction before updating the private tracker. No signup name, contact or receipt ID is added to the payment URL.
 
 Types: General registration (existing optional number/text labels), Items needed (multiple items and quantities), Volunteer jobs (one opening per chosen job per response), Fishing tournament (required partner, sequential boats).
 

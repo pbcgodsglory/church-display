@@ -4,8 +4,8 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#526eff"><meta name="description" content="Sign up for events and volunteer opportunities at Providence Baptist Church.">
   <title>Church Sign-ups | Providence Baptist Church</title>
-  <link rel="icon" href="../icon-192.png"><link rel="stylesheet" href="./styles.css">
-  <script src="./transport.js" defer></script><script src="./app.js?v=optional-contact-1" defer></script>
+  <link rel="icon" href="../icon-192.png"><link rel="stylesheet" href="./styles.css?v=tithely-1">
+  <script src="./transport.js" defer></script><script src="./app.js?v=tithely-1" defer></script>
 </head>
 <body><main>
   <a class="back" href="../">&#8592; Back to PBC</a>
@@ -13,7 +13,7 @@
   <section id="event-list" aria-labelledby="list-heading"><h2 id="list-heading">Open sign-ups</h2><p id="load-status" role="status">Loading current sign-ups…</p><button id="reload" type="button" class="secondary" hidden>Try again</button><div id="events"></div></section>
   <section id="signup" class="card" aria-labelledby="event-title" hidden>
     <button id="all-events" type="button" class="text-button">&#8592; All sign-ups</button>
-    <h2 id="event-title" tabindex="-1"></h2><p id="event-when" class="meta"></p><p id="event-where" class="meta"></p><p id="event-details" class="prewrap"></p><p id="event-deadline" class="small"></p><p id="event-contact" class="small prewrap"></p>
+    <h2 id="event-title" tabindex="-1"></h2><p id="event-when" class="meta"></p><p id="event-where" class="meta"></p><p id="event-details" class="prewrap"></p><p id="event-fee" class="meta" hidden></p><p id="event-deadline" class="small"></p><p id="event-contact" class="small prewrap"></p>
     <form id="signup-form"><fieldset id="signup-fields"><legend>Your sign-up</legend>
       <label for="name">Your name <span class="required">(required)</span></label><input id="name" name="name" autocomplete="name" maxlength="100" required>
       <label for="contact">Phone or email <span class="required">(optional)</span></label><input id="contact" name="contact" autocomplete="off" maxlength="160"><p class="hint">Add it if you’d like the church to contact you about this sign-up.</p>
@@ -24,7 +24,9 @@
       <label for="notes">Notes <span class="required">(optional)</span></label><textarea id="notes" name="notes" rows="3" maxlength="1000"></textarea>
       <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
     </fieldset><p class="small">Your contact information and responses are shared with church organizers, not displayed on this page.</p><button id="submit" type="submit" class="primary">Sign me up</button></form>
-    <div id="form-status" role="status" aria-live="polite"></div><button id="back-after-success" class="secondary" type="button" hidden>View other sign-ups</button>
+    <div id="form-status" role="status" aria-live="polite"></div>
+    <section id="payment-step" aria-labelledby="payment-heading" hidden><h3 id="payment-heading">Complete your payment</h3><p>Your sign-up is saved. Use the same name you registered with so the organizer can match your payment.</p><a id="pay-link" class="primary payment-link" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"></a><p class="hint">Opens Tithe.ly in a new tab. Tithe.ly offers an optional processing-fee contribution. The organizer will verify your payment and mark it Paid.</p></section>
+    <button id="back-after-success" class="secondary" type="button" hidden>View other sign-ups</button>
   </section>
   <footer class="small">Providence Baptist Church · Oakman, Alabama</footer>
 </main></body></html>

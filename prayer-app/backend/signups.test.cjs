@@ -19,6 +19,11 @@ assert.equal(ctx.signupPublicEvents_([event(),event({0:'invalid'}),event({0:oid,
 assert.equal(ctx.signupPublicEvents_([event(),event()],now).length,0);
 assert.equal(ctx.signupPublicEvents_([event({6:'bad date'})],now).length,0);
 assert(!JSON.stringify(ctx.signupPublicEvents_([event()],now)).includes('PRIVATE'));
+const paymentUrl='https://give.tithe.ly/?formId='+id+'&amount=5000&frequency=one-time';
+assert.equal(ctx.signupPayment_(paymentUrl,50).amount,50);assert.equal(ctx.signupPayment_(paymentUrl,50).url,paymentUrl);
+for(const [url,amount] of [[paymentUrl,5000],[paymentUrl,0],[paymentUrl,'50'],[paymentUrl,50.001],['javascript:alert(1)',50],[paymentUrl.replace('give.tithe.ly','give.tithe.ly.evil.invalid'),50],[paymentUrl.replace('https:','http:'),50],[paymentUrl+'&amount=5000',50],[paymentUrl.replace('one-time','monthly'),50],[paymentUrl.replace(id,'bad'),50],[paymentUrl+'&bad=%',50]])assert.equal(ctx.signupPayment_(url,amount),null,'invalid or mismatched payment setting is omitted');
+assert.equal(ctx.signupPublicEvents_([event({13:paymentUrl,14:50})],now)[0].payment.amount,50);
+assert.equal(ctx.signupPublicEvents_([event()],now)[0].payment,null,'events without payment settings remain free of payment prompts');
 eventRows.push(event());const payload={signupId:sid,eventId:id,name:'=TEST NAME',contact:'test@example.invalid',number:'2',item:'+Dish',notes:'@Note',website:''};
 for(const type of ['General registration','Items needed','Volunteer jobs','Fishing tournament']) {
  const publicEvent={type,numberLabel:'Number attending',itemLabel:'Dish',options:[{id:oid,label:'Desserts',remaining:3}]};
@@ -38,11 +43,12 @@ rows[1][9]='Cancelled';assert.equal(ctx.signupEvents_()[0].options[0].remaining,
 eventRows[0][2]='Volunteer jobs';assert.throws(()=>ctx.submitEventSignup({...p2,signupId:'f2699ab2-778a-40ce-bd8d-a699544962b7'}),/one opening/);
 ctx.submitEventSignup({...p2,signupId:'f2699ab2-778a-40ce-bd8d-a699544962b7',selections:[{id:oid,quantity:1}]});
 const publicJson=JSON.stringify(ctx.signupEvents_());assert(!publicJson.includes('test@example')&&!publicJson.includes('TEST NAME')&&!publicJson.includes('Unpaid'));
-eventRows[0][2]='Fishing tournament';
+eventRows[0][2]='Fishing tournament';eventRows[0][13]=paymentUrl;eventRows[0][14]=50;
 const fishing={...payload,signupId:'12699ab2-778a-40ce-bd8d-a699544962b7',partner:'@Partner'};assert.equal(ctx.submitEventSignup(fishing).boatNumber,1);assert.equal(rows.at(-1)[12],"'@Partner");assert.equal(rows.at(-1)[15],'Unpaid');
 rows.at(-1)[9]='Cancelled';assert.equal(ctx.submitEventSignup({...fishing,signupId:'22699ab2-778a-40ce-bd8d-a699544962b7'}).boatNumber,2,'cancelled boat number is never reassigned');
 assert.equal(ctx.submitEventSignup(fishing).boatNumber,1,'retry returns original boat');
 const receipt=ctx.signupApi_({signupApi:'receipt',signupId:fishing.signupId});assert.deepEqual(receipt,{ok:true,received:true,boatNumber:1});
+assert.equal(rows.at(-1)[15],'Unpaid','link availability and receipt retrieval never mark an entry Paid');
 assert.throws(()=>ctx.submitEventSignup({...fishing,signupId:'32699ab2-778a-40ce-bd8d-a699544962b7',partner:''}));
 eventRows[0][7]=false;assert.throws(()=>ctx.submitEventSignup({...fishing,signupId:'32699ab2-778a-40ce-bd8d-a699544962b7'}),/closed/);
 const beforeOpen=opens;activeBook=signupBook;ctx.signupEvents_();assert.equal(opens,beforeOpen,'bound signup editor uses its own workbook without cross-file auth');

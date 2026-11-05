@@ -4,7 +4,7 @@ function signupSpreadsheet_() {
   const active=SpreadsheetApp.getActiveSpreadsheet();
   return active&&active.getId()===SIGNUP_SPREADSHEET_ID_?active:SpreadsheetApp.openById(SIGNUP_SPREADSHEET_ID_);
 }
-const SIGNUP_EVENT_HEADERS_ = ['Event ID','Event name','Sign-up type','When','Where','Details','Sign up by','Open?','Number label','Item or role label','Questions or contact','Sign-up link','Sign-ups received'];
+const SIGNUP_EVENT_HEADERS_ = ['Event ID','Event name','Sign-up type','When','Where','Details','Sign up by','Open?','Number label','Item or role label','Questions or contact','Sign-up link','Sign-ups received','Tithe.ly payment link','Entry fee (USD)'];
 const SIGNUP_HEADERS_ = ['Received At','Signup ID','Event ID','Event','Name','Phone or email','Number','Item or role','Notes','Status','Admin notes','Sign-up type','Partner name','Boat number','Selections JSON','Payment status','Amount paid','Payment date'];
 const SIGNUP_OPTION_HEADERS_ = ['Option ID','Event ID','Event','Item or job','Number needed','Shift or details','Reserved','Remaining'];
 const SIGNUP_TYPES_ = ['General registration','Items needed','Volunteer jobs','Fishing tournament'];
@@ -15,12 +15,22 @@ function signupSheet_(name, headers) {
   return sheet;
 }
 function signupRows_(name,headers) {const s=signupSheet_(name,headers);return s.getLastRow()<2?[]:s.getRange(2,1,s.getLastRow()-1,headers.length).getValues();}
+function signupPayment_(url,amount) {
+  // Payment links are public event settings, never proof that a registration has paid.
+  if(typeof url!=='string'||url.length>2048||!/^https:\/\/give\.tithe\.ly\/\?[^#\s<>"'\\]+$/.test(url)||typeof amount!=='number'||!Number.isFinite(amount)||amount<=0||amount>99999.99||Math.abs(amount*100-Math.round(amount*100))>0.000001)return null;
+  try {
+    const params=url.split('?')[1].split('&').map(p=>{const i=p.indexOf('=');return [decodeURIComponent(i<0?p:p.slice(0,i)),decodeURIComponent(i<0?'':p.slice(i+1))];});
+    const values=key=>params.filter(p=>p[0]===key).map(p=>p[1]),cents=values('amount'),form=values('formId'),frequency=values('frequency');
+    if(cents.length!==1||!/^\d+$/.test(cents[0])||Number(cents[0])!==Math.round(amount*100)||form.length!==1||!SIGNUP_ID_PATTERN_.test(form[0])||frequency.length!==1||frequency[0]!=='one-time')return null;
+    return {url,amount};
+  }catch(error){return null;}
+}
 function signupPublicEvents_(rows,now) {
   const seen=new Set(),duplicates=new Set();rows.forEach(r=>{const id=String(r[0]);if(seen.has(id))duplicates.add(id);seen.add(id);});
   return rows.filter(r=>r[7]===true&&SIGNUP_ID_PATTERN_.test(String(r[0]))&&String(r[1]).trim()&&!duplicates.has(String(r[0]))&&
     (!r[2]||SIGNUP_TYPES_.includes(r[2]))&&((r[6]===''||r[6]===null||r[6]===undefined)||(r[6] instanceof Date&&!isNaN(r[6].getTime())&&r[6].getTime()>now.getTime())))
     .map(r=>({id:String(r[0]),title:String(r[1]),type:r[2]||SIGNUP_TYPES_[0],when:String(r[3]||''),where:String(r[4]||''),details:String(r[5]||''),
-      deadline:r[6] instanceof Date?r[6].toISOString():'',numberLabel:String(r[8]||'').trim(),itemLabel:String(r[9]||'').trim(),contact:String(r[10]||'')}));
+      deadline:r[6] instanceof Date?r[6].toISOString():'',numberLabel:String(r[8]||'').trim(),itemLabel:String(r[9]||'').trim(),contact:String(r[10]||''),payment:signupPayment_(r[13],r[14])}));
 }
 function signupSelections_(raw) {if(!raw)return [];const list=JSON.parse(raw);if(!Array.isArray(list))throw Error('Invalid saved selections');return list;}
 function signupOptions_(eventId,optionRows,responses) {
