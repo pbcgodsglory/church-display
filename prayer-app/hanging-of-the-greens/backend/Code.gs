@@ -20,11 +20,13 @@ function doGet() {
   let result;
   try {
     // A fixed spreadsheet and tab, never a visitor-supplied ID or range.
-    const sheet=SpreadsheetApp.openById(GREENS_SHEET_ID_).getSheetByName('Readings');
-    const last=sheet.getLastRow();
-    if(last<2 || last>100) throw new Error('Invalid sheet');
-    result={ok:true,sections:greensRows_(sheet.getRange(1,1,last,5).getValues())};
+    // The Sheets API supports spreadsheets.readonly; SpreadsheetApp.openById
+    // requires a broader write scope even when used only for reading.
+    const data=Sheets.Spreadsheets.Values.get(GREENS_SHEET_ID_, 'Readings!A1:E100',
+      {valueRenderOption:'UNFORMATTED_VALUE'});
+    result={ok:true,sections:greensRows_(data.values || [])};
   } catch(error) {
+    console.error(error && error.stack || String(error));
     result={ok:false,error:'Readings are unavailable. Please contact the church.'};
   }
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
