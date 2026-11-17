@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#214b3c">
+  <title>Hanging of the Greens | PBC</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#readings">Skip to readings</a>
+  <main>
+    <a class="back" href="../">← PBC App</a>
+    <header>
+      <p class="eyebrow">PROVIDENCE BAPTIST CHURCH</p>
+      <span class="ornament" aria-hidden="true">✦</span>
+      <h1>Hanging of<br>the Greens</h1>
+      <p class="intro">Prepare Him room.</p>
+      <p>Scripture, symbols, and readings for our Christmas service.</p>
+    </header>
+    <section class="controls" aria-label="Reading controls">
+      <p id="status" role="status">Loading readings…</p>
+      <div class="toolbar"><button id="refresh" type="button">Refresh readings</button><button id="expand" type="button" aria-expanded="false" aria-controls="readings">Expand all</button></div>
+      <p class="help">Tap a title to open its passage. Choose Reader mode for larger text.</p>
+    </section>
+    <section id="readings" aria-label="Service readings" tabindex="-1"></section>
+    <noscript><p>Please enable JavaScript to view the readings.</p></noscript>
+    <footer>Providence Baptist Church · Hanging of the Greens</footer>
+  </main>
+  <dialog id="reader" aria-labelledby="reader-title">
+    <div class="reader-toolbar"><button id="close-reader" type="button">← All readings</button><div role="group" aria-label="Text size"><button id="smaller" type="button" aria-label="Smaller text">A−</button><button id="larger" type="button" aria-label="Larger text">A+</button></div></div>
+    <article id="reader-content"><p id="reader-order" class="eyebrow"></p><h1 id="reader-title" tabindex="-1"></h1><p id="reader-name" class="reader-name"></p><div id="reader-reading" class="spoken"></div><aside id="reader-cues" class="cues"></aside></article>
+    <nav class="reader-nav" aria-label="Move between readings"><button id="previous" type="button">← Previous</button><button id="next" type="button">Next →</button></nav>
+  </dialog>
+</body>
+</html>
